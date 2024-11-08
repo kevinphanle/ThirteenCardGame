@@ -46,7 +46,7 @@
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  padding: 0.5rem;
+  padding: .5rem 1rem;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   
   &:hover {
@@ -65,12 +65,12 @@
 
   .number {
     font-size: 1.5rem;
-    font-weight: bold;
+    font-weight: 500;
     margin-bottom: -.85rem;
   }
 
   .suit {
-    font-size: 1.5rem;
+    font-size: 1rem;
   }
 
   .topLeft,
@@ -80,13 +80,13 @@
   }
 
   .topLeft {
-    top: .5rem;
-    left: .5rem;
+    top: 0;
+    left: .3rem;
   }
 
   .bottomRight {
-    bottom: .5rem;
-    right: .5rem;
+    bottom: 0;
+    right: .3rem;
     transform: rotate(180deg);
   }
 }
@@ -95,6 +95,105 @@
   border: 2px solid #007bff;
   background-color: #e0f7ff;
 }
+
+.centerArea {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+  border-radius: 8px;
+}
+
+.suitArea {
+  width: 100%;
+  display: grid;
+  column-gap: 1.3rem;
+  justify-items: center;
+  align-items: center;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  position: relative;
+
+  .suit {
+    font-size: 1.5rem;
+    grid-row-end: span 2;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+  }
+
+  .rank {
+    font-size: 2rem;
+    font-weight: bold;
+  }
+}
+
+.Hearts {
+  background-image: url("icons/heart.svg");
+}
+.Diamonds {
+  background-image: url("icons/diamond.svg");
+}
+.Spades {
+  background-image: url("icons/spade.svg");
+}
+.Clubs {
+  background-image: url("icons/club.svg");
+}
+
+.five {
+  grid-template-rows: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr) !important;
+  column-gap: 1.3rem;
+
+  .suit:nth-child(1),
+  .suit:nth-child(2) {
+    grid-row: 1;
+  }
+
+  .suit:nth-child(3) {
+    grid-row: 2;
+    grid-column: span 2;
+  }
+
+  .suit:nth-child(4),
+  .suit:nth-child(5) {
+    grid-row: 3;
+  }
+}
+
+.seven {
+  grid-template-rows: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr) !important;
+  column-gap: 1.3rem;
+
+  .suit:nth-child(1),
+  .suit:nth-child(2) {
+    grid-row: 1;
+  }
+
+  .suit:nth-child(3) {
+    grid-row: 2;
+    grid-column: span 2;
+  }
+
+  .suit:nth-child(4),
+  .suit:nth-child(5) {
+    grid-row: 3;
+  }
+
+  
+  .suit:nth-child(6),
+  .suit:nth-child(7) {
+    grid-row: 4;
+  }
+}
+
+
 
 .player {
   margin: 1rem;
