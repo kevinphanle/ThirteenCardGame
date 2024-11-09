@@ -15,11 +15,6 @@ const Game: React.FC = () => {
   const [deck, setDeck] = useState<CardType[]>(createDeck())
   const [playerHands, setPlayerHands] = useState<CardType[][]>([])
 
-  const handleShuffle = () => {
-    setDeck(shuffleDeck([...deck]))
-    console.log(deck)
-  }
-
   const handleReset = () => {
     setDeck(createDeck())
     setPlayerHands([])
@@ -27,9 +22,7 @@ const Game: React.FC = () => {
 
   const handleDeal = () => {
     setPlayerHands([])
-    console.log(playerHands)
     const hands = dealCards(deck, 4);
-    console.log(hands)
     setPlayerHands(hands)
   }
 
@@ -40,7 +33,6 @@ const Game: React.FC = () => {
   return (
     <div className={classNames.board}>
       <h1>Card Game</h1>
-      <button onClick={handleShuffle}>Shuffle Deck</button>
       <button onClick={handleDeal}>Deal</button>
       <button onClick={handleReset}>Reset</button>
 

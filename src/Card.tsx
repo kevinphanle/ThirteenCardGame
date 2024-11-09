@@ -21,19 +21,19 @@ const Card: React.FC<CardProps> = ({card, onClick, selected}) => {
     switch (card.rank) {
       case 'A':
         len = 1;
-        gridColumns = 1;
+        suitAreaClass = `${styles.suitArea} ${styles.ace}`;
         break;
       case '2':
         len = 2;
-        gridColumns = 1;
+        suitAreaClass = `${styles.suitArea} ${styles.two}`;
         break;
       case '3':
         len = 3;
-        gridColumns = 1;
+        suitAreaClass = `${styles.suitArea} ${styles.three}`;
         break;
       case '4':
         len = 4;
-        gridColumns = 2;
+        suitAreaClass = `${styles.suitArea} ${styles.four}`;
         break;
       case '5':
         len = 5;
@@ -41,7 +41,7 @@ const Card: React.FC<CardProps> = ({card, onClick, selected}) => {
         break;
       case '6':
         len = 6;
-        gridColumns = 2;
+        suitAreaClass = `${styles.suitArea} ${styles.six}`;
         break;
       case '7':
         len = 7;
@@ -49,22 +49,31 @@ const Card: React.FC<CardProps> = ({card, onClick, selected}) => {
         break;
       case '8':
         len = 8;
-        gridColumns = 2;
+        suitAreaClass = `${styles.suitArea} ${styles.eight}`;
         break;
       case '9':
         len = 9;
-        gridColumns = 3;
+        suitAreaClass = `${styles.suitArea} ${styles.nine}`;
         break;
       case '10':
         len = 10;
-        gridColumns = 3;
+        suitAreaClass = `${styles.suitArea} ${styles.ten}`;
         break;
       case 'J':
       case 'Q':
       case 'K':
+        const obj = {
+          J: "jack",
+          Q: "queen",
+          K: "king"
+        }
+        suitAreaClass = `${styles.suitArea} ${styles[obj[card.rank]]}`;
         return (
-          <div className={styles.suitArea}>
-            <span className={styles.rank}>{card.rank}</span>
+          <div className={suitAreaClass}>
+            <div 
+            className={`${styles.suit} ${styles[card.suit]} ${styles[obj[card.rank]]}` }
+            >
+            </div>
           </div>
         );
       default:

@@ -27,7 +27,7 @@ const PlayArea: React.FC<PlayAreaProps> = ({ playerHands }) => {
   return (
     <div className={classNames.playArea}>
       {playerHands.map((hand, index) => (
-        <Player key={index} initialHand={defaultHand} />
+        <Player key={index} initialHand={hand} />
       ))}
     </div>
   );
