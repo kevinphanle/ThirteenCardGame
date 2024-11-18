@@ -15,8 +15,12 @@ const Card: React.FC<CardProps> = ({card, onClick, selected}) => {
 
   const renderSuitArea = () => {
     let len = 0;
-    let gridColumns = 1;
     let suitAreaClass = styles.suitArea;
+    const obj = {
+      J: "jack",
+      Q: "queen",
+      K: "king"
+    }
 
     switch (card.rank) {
       case 'A':
@@ -62,11 +66,6 @@ const Card: React.FC<CardProps> = ({card, onClick, selected}) => {
       case 'J':
       case 'Q':
       case 'K':
-        const obj = {
-          J: "jack",
-          Q: "queen",
-          K: "king"
-        }
         suitAreaClass = `${styles.suitArea} ${styles[obj[card.rank]]}`;
         return (
           <div className={suitAreaClass}>
@@ -78,7 +77,6 @@ const Card: React.FC<CardProps> = ({card, onClick, selected}) => {
         );
       default:
         len = parseInt(card.rank);
-        gridColumns = Math.ceil(len / 2);
     }
 
     return (

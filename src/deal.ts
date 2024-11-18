@@ -17,7 +17,8 @@ export const dealCards = (deck: Card[], numberOfPlayers: number): Card[][] => {
   const playerHands: Card[][] = Array.from({ length: numberOfPlayers }, () => []);
 
   for (let i = 0; i < shuffledDeck.length; i++) {
-    playerHands[i % numberOfPlayers].push(shuffledDeck[i]);
+    const card = {...shuffledDeck[i], ownerIndex: i % numberOfPlayers};
+    playerHands[i % numberOfPlayers].push(card);
   }
 
   playerHands.forEach(hand => {

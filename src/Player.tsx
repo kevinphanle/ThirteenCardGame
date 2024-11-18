@@ -2,24 +2,32 @@ import React, { useEffect, useMemo } from "react";
 import { Card as CardType } from "./types";
 import classNames from './App.module.css'
 import Card from "./Card";
+import { useGameContext } from "./GameContext";
+import { getHandType } from "./HandTypeUtils";
 
 import sortHand from "./sortHand";
 
 interface PlayerProps {
   initialHand: CardType[];
+  onPlayCards?: (cards: CardType[]) => void;
+  isCurrentPlayer?: boolean;
+  onPass: () => void;
 }
 
-const Player: React.FC<PlayerProps> = ({ initialHand }) => {
+const rankOrder = ['3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+const suitOrder = ['Spades', 'Clubs', 'Diamonds', 'Hearts'];
+
+const Player: React.FC<PlayerProps> = ({ initialHand, onPlayCards, isCurrentPlayer, onPass}) => {
   const [hand, setHand] = React.useState<CardType[]>(initialHand);
   const [selectedCards, setSelectedCards] = React.useState<CardType[]>([]);
   const [handType, setHandType] = React.useState<string | null>(null);
+  const {playedCards, currentHandType, setCurrentHandType, handHistory, setHandHistory} = useGameContext();
 
   useEffect(() => {
     setHand(sortHand(initialHand));
   }, [initialHand]);
 
-  const handleClick = (card: CardType) => {
-    console.log("card clicked: ", card);
+  const handleCardSelect = (card: CardType) => {
     const isSelected = selectedCards.some(selectedCard => selectedCard.rank === card.rank && selectedCard.suit === card.suit);
 
     const newSelectedCards = isSelected 
@@ -30,53 +38,6 @@ const Player: React.FC<PlayerProps> = ({ initialHand }) => {
 
     setHandType(getHandType(newSelectedCards));
   };
-
-  const rankOrder = ['3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
-
-
-  const checkForStraight = (cards: CardType[]): boolean => {
-    if (cards.length < 3) return false;
-    // Exclude '2' from being part of a straight
-    if (cards.some(card => card.rank === '2')) {
-      return false;
-    }
-
-    const sortedRanks = cards
-      .map(card => rankOrder.indexOf(card.rank))
-      .sort((a, b) => a - b);
-
-
-    for (let i = 0; i < sortedRanks.length - 1; i++) {
-      let currentRank = sortedRanks[i];
-      let nextRank = sortedRanks[i + 1];
-
-      if (nextRank !== currentRank + 1) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  function checkForBomb(cards: CardType[]): boolean {
-    if (cards.length == 4 && cards[0].rank === cards[1].rank && cards[1].rank === cards[2].rank && cards[2].rank === cards[3].rank) {
-      return true;
-    }
-    return false;
-  }
-
-  const getHandType = (cards: CardType[]): string | null => {
-    if (cards.length == 2 && cards[0].rank === cards[1].rank) {
-      return "Pair";
-    } else if (cards.length == 3 && cards[0].rank === cards[1].rank && cards[1].rank === cards[2].rank) {
-      return "Triple";
-    } else if (checkForStraight(cards)) {
-      return "Straight";
-    } else if (checkForBomb(cards)) {
-      return "Bomb"
-    }
-
-    return null;
-  }
 
   const checkForPossiblePairs = (cards: CardType[]): boolean => {
     const rankCounts: { [key: string]: number } = {};
@@ -101,7 +62,6 @@ const Player: React.FC<PlayerProps> = ({ initialHand }) => {
       .map(card => rankOrder.indexOf(card.rank))
       .sort((a, b) => a - b);
 
-    console.log('sorted ranks', sortedRanks)
 
     let consecutiveCount = 1;
 
@@ -130,7 +90,6 @@ const Player: React.FC<PlayerProps> = ({ initialHand }) => {
     // if (cards.length >= 4) {
     //   possibleCombinations.push("Quadruple");
     // }
-    console.log('is there a straight', checkForPossibleStraights(cards))
     if (checkForPossibleStraights(cards)) {
       possibleCombinations.push("Straight");
     }
@@ -140,18 +99,67 @@ const Player: React.FC<PlayerProps> = ({ initialHand }) => {
   
   const possibleCombinations = useMemo(() => checkForPossibleCombinations(hand), [hand]);
 
+  const isCardHigher = (card: CardType, latestPlayedCard: CardType): boolean => {
+    if (rankOrder.indexOf(card.rank) === rankOrder.indexOf(latestPlayedCard.rank)) {
+      return suitOrder.indexOf(card.suit) > suitOrder.indexOf(latestPlayedCard.suit);
+    }
+    const isHigher = rankOrder.indexOf(card.rank) > rankOrder.indexOf(latestPlayedCard.rank)
+    return isHigher;
+  }
 
+  const isCardPlayable = (cards: CardType[]): boolean => {
+    if (handHistory.length === 0) return true;
+
+    const selectedHandType = getHandType(cards);
+    const currentHand = handHistory[handHistory.length - 1];
+
+    if (selectedHandType !== currentHand.handType || currentHand.cards.length !== cards.length) {
+      return false;
+    }
+
+    if (playedCards.length === 0) return true;
+    // check last card of current hand and compare to last card of selected cards
+    return isCardHigher(cards[cards.length - 1], currentHand.cards[currentHand.cards.length - 1]);
+  }
+
+  const playHand = () => {
+    if (isCardPlayable(selectedCards)) {
+      const newHand = hand.filter(card => !selectedCards.some(selectedCard => selectedCard.rank === card.rank && selectedCard.suit === card.suit));
+      console.log('selected cards', selectedCards);
+      setHand(newHand);
+      if (onPlayCards) {
+        const handType = getHandType(selectedCards);
+        setCurrentHandType(handType);
+        onPlayCards(selectedCards);
+        setHandHistory([...handHistory, {cards: selectedCards, handType: handType}]);
+        setSelectedCards([]);
+      } else {
+        console.error('onPlayCards not provided');
+      }
+    } else {
+      console.error('Selected cards are not playable');
+    }
+  }
+
+  const passTurn = () => {
+    setSelectedCards([]);
+    setHandType(null);
+    onPass();
+  }
 
   return (
-    <div className={classNames.player}>
+    <div className={`${isCurrentPlayer ? classNames['active-player'] : ''} ${classNames.player}`}>
       <h2>Player's Hand</h2>
-      <p>Selected Cards: {selectedCards.map(card => (
-        <span key={card.rank + card.suit}>{card.rank} {card.suit} </span>
-      ))}</p>
+      {selectedCards.length > 0 && isCurrentPlayer && 
+        <button onClick={playHand}>Play cards</button>
+      }
 
       {handType && <p>Hand Type: {handType}</p>}
 
       <p>Possible Combinations: {possibleCombinations}</p>
+      {isCurrentPlayer &&
+        <button onClick={passTurn}>Pass</button>
+      }
 
       <div className={classNames.hand}>
         {
@@ -159,7 +167,7 @@ const Player: React.FC<PlayerProps> = ({ initialHand }) => {
             <Card 
               key={index} 
               card={card} 
-              onClick={handleClick}
+              onClick={handleCardSelect}
               selected={selectedCards.some(selectedCard => selectedCard.rank === card.rank && selectedCard.suit === card.suit)}
               />
           ))

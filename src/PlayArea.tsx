@@ -2,12 +2,26 @@ import React from 'react';
 import { Card as CardType } from './types';
 import Player from './Player';
 import classNames from './App.module.css';
+import { useGameContext } from './GameContext';
+import { getHandType } from './HandTypeUtils';
 
 interface PlayAreaProps {
   playerHands: CardType[][];
+  onPlayCards: (cards: CardType[]) => void;
 }
 
-const PlayArea: React.FC<PlayAreaProps> = ({ playerHands }) => {
+const PlayArea: React.FC<PlayAreaProps> = ({ playerHands, onPlayCards }) => {
+  const { playedCards, currentHandType, setCurrentHandType, handHistory, currentPlayer, setCurrentPlayer } = useGameContext();
+
+  const handlePlayCards = (cards: CardType[]) => {
+    const handType = getHandType(cards);
+    setCurrentHandType(handType);
+    onPlayCards(cards);
+  }
+
+  const handlePass = () => {
+    setCurrentPlayer((currentPlayer + 1) % playerHands.length);
+  }
 
   const defaultHand = [
     { rank: 'A', suit: 'Hearts' },
@@ -26,8 +40,38 @@ const PlayArea: React.FC<PlayAreaProps> = ({ playerHands }) => {
   ]
   return (
     <div className={classNames.playArea}>
+      <div className="play-area">
+        {
+          playedCards.map((card, index) => (
+            <div key={index} className={classNames.playedCard}>
+              <span>{card.rank}</span>
+              <span>{card.suit}</span>
+            </div>
+          ))
+        }
+
+        {currentHandType && <div className="current-hand-type">Current Hand Type: {currentHandType}</div>}
+
+        { handHistory.length > 0 && <div className="hand-history">
+          <h3>Hand History</h3>
+          {handHistory.map((entry, index) => (
+            <div key={index} className="entry">
+              <span>Hand Type: {entry.handType}</span>
+              {entry.cards.map((card, cardIndex) => (
+                <span key={cardIndex}>{card.rank} {card.suit}</span>
+              ))}
+            </div>
+          ))}
+        </div>}
+      </div>
       {playerHands.map((hand, index) => (
-        <Player key={index} initialHand={hand} />
+        <Player 
+          key={index} 
+          initialHand={hand} 
+          onPlayCards={handlePlayCards}
+          isCurrentPlayer={index === currentPlayer}
+          onPass={handlePass}
+          />
       ))}
     </div>
   );
