@@ -14,7 +14,7 @@ interface PlayerProps {
   onPass: () => void;
 }
 
-const rankOrder = ['3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+const rankOrder = ['3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A', '2'];
 const suitOrder = ['Spades', 'Clubs', 'Diamonds', 'Hearts'];
 
 const Player: React.FC<PlayerProps> = ({ initialHand, onPlayCards, isCurrentPlayer, onPass}) => {
@@ -100,10 +100,11 @@ const Player: React.FC<PlayerProps> = ({ initialHand, onPlayCards, isCurrentPlay
   const possibleCombinations = useMemo(() => checkForPossibleCombinations(hand), [hand]);
 
   const isCardHigher = (card: CardType, latestPlayedCard: CardType): boolean => {
-    if (rankOrder.indexOf(card.rank) === rankOrder.indexOf(latestPlayedCard.rank)) {
+    const rankOrderForComparison = handType === 'Single' ? rankOrder : rankOrder.slice(0, -1);
+    if (rankOrderForComparison.indexOf(card.rank) === rankOrderForComparison.indexOf(latestPlayedCard.rank)) {
       return suitOrder.indexOf(card.suit) > suitOrder.indexOf(latestPlayedCard.suit);
     }
-    const isHigher = rankOrder.indexOf(card.rank) > rankOrder.indexOf(latestPlayedCard.rank)
+    const isHigher = rankOrderForComparison.indexOf(card.rank) > rankOrderForComparison.indexOf(latestPlayedCard.rank)
     return isHigher;
   }
 
@@ -157,8 +158,8 @@ const Player: React.FC<PlayerProps> = ({ initialHand, onPlayCards, isCurrentPlay
       {handType && <p>Hand Type: {handType}</p>}
 
       <p>Possible Combinations: {possibleCombinations}</p>
-      {isCurrentPlayer &&
-        <button onClick={passTurn}>Pass</button>
+      {isCurrentPlayer && handHistory.length > 0 && 
+        <button onClick={passTurn} className={classNames.passBtn}>Pass</button>
       }
 
       <div className={classNames.hand}>

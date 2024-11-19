@@ -1,5 +1,4 @@
 .board {
-  width: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -41,7 +40,6 @@
   position: relative;
   border: 1px solid #333;
   border-radius: 8px;
-  margin: 0.5rem;
   text-align: center;
   cursor: pointer;
   background-color: #fff;
@@ -512,7 +510,7 @@
 
 
 .player {
-  margin: 1rem;
+  margin: 1rem 0;
   padding: 1rem;
   background-color: #f0f0f0;
   border-radius: 8px;
@@ -522,6 +520,10 @@
 .active-player {
   background-color: #e0f7ff;
   border: 1px solid blue;
+}
+
+.passBtn {
+  margin-bottom: 1rem;
 }
 
 .hand {

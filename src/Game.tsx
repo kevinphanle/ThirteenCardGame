@@ -11,9 +11,7 @@ import classNames from './App.module.css'
 
 const Game: React.FC = () => {
   const [deck, setDeck] = useState<CardType[]>(createDeck())
-  const [playerHands, setPlayerHands] = useState<CardType[][]>([])
-  const [currentPlayer, setCurrentPlayer] = useState<number>(0);
-  const {setPlayedCards, setCurrentHandType, setHandHistory} = useGameContext(); 
+  const {playerHands, setPlayerHands, setPlayedCards, setCurrentHandType, setHandHistory, currentPlayer, setCurrentPlayer} = useGameContext(); 
 
   const handleReset = () => {
     setDeck(createDeck())
@@ -28,7 +26,11 @@ const Game: React.FC = () => {
     setPlayerHands([])
     const hands = dealCards(deck, 4);
     setPlayerHands(hands)
-    setCurrentPlayer(0)
+    setCurrentPlayer(findPlayerWith3OfSpades(hands));
+  }
+
+  const findPlayerWith3OfSpades = (hands: CardType[][]): number => {
+    return hands.findIndex(hand => hand.some(card => card.rank === '3' && card.suit === 'Spades'));
   }
 
   const handlePlayCards = (cards: CardType[]) => {
