@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { Card as CardType } from "./types";
 import classNames from './App.module.css'
 import Card from "./Card";
@@ -12,20 +12,21 @@ interface PlayerProps {
   onPlayCards?: (cards: CardType[]) => void;
   isCurrentPlayer?: boolean;
   onPass: () => void;
+  isUserControlled?: boolean;
 }
 
 const rankOrder = ['3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A', '2'];
 const suitOrder = ['Spades', 'Clubs', 'Diamonds', 'Hearts'];
 
-const Player: React.FC<PlayerProps> = ({ initialHand, onPlayCards, isCurrentPlayer, onPass}) => {
-  const [hand, setHand] = React.useState<CardType[]>(initialHand);
-  const [selectedCards, setSelectedCards] = React.useState<CardType[]>([]);
-  const [handType, setHandType] = React.useState<string | null>(null);
-  const {playedCards, currentHandType, setCurrentHandType, handHistory, setHandHistory} = useGameContext();
+const Player: React.FC<PlayerProps> = ({ initialHand, onPlayCards, isCurrentPlayer, onPass, isUserControlled}) => {
+  const [hand, setHand] = useState<CardType[]>(initialHand.map(card => ({ ...card, hidden: !isUserControlled })));
+  const [selectedCards, setSelectedCards] = useState<CardType[]>([]);
+  const [handType, setHandType] = useState<string | null>(null);
+  const {setCurrentHandType, handHistory, setHandHistory} = useGameContext();
 
   useEffect(() => {
-    setHand(sortHand(initialHand));
-  }, [initialHand]);
+    setHand(sortHand(initialHand.map(card => ({ ...card, hidden: !isUserControlled }))));
+  }, [initialHand, isUserControlled]);
 
   const handleCardSelect = (card: CardType) => {
     const isSelected = selectedCards.some(selectedCard => selectedCard.rank === card.rank && selectedCard.suit === card.suit);
@@ -100,7 +101,7 @@ const Player: React.FC<PlayerProps> = ({ initialHand, onPlayCards, isCurrentPlay
   const possibleCombinations = useMemo(() => checkForPossibleCombinations(hand), [hand]);
 
   const isCardHigher = (card: CardType, latestPlayedCard: CardType): boolean => {
-    const rankOrderForComparison = handType === 'Single' ? rankOrder : rankOrder.slice(0, -1);
+    const rankOrderForComparison = (handType === 'Pair' || handType === 'Single') ? rankOrder : rankOrder.slice(0, -1);
     if (rankOrderForComparison.indexOf(card.rank) === rankOrderForComparison.indexOf(latestPlayedCard.rank)) {
       return suitOrder.indexOf(card.suit) > suitOrder.indexOf(latestPlayedCard.suit);
     }
@@ -109,21 +110,23 @@ const Player: React.FC<PlayerProps> = ({ initialHand, onPlayCards, isCurrentPlay
   }
 
   const isCardPlayable = (cards: CardType[]): boolean => {
-    if (handHistory.length === 0) return true;
-
     const selectedHandType = getHandType(cards);
     const currentHand = handHistory[handHistory.length - 1];
 
-    if (selectedHandType !== currentHand.handType || currentHand.cards.length !== cards.length) {
+    if (handHistory.length === 0 && selectedHandType ) {
+      return true;
+    } 
+
+    if (selectedHandType !== currentHand?.handType || currentHand?.cards.length !== cards.length || selectedHandType === null) {
       return false;
     }
 
-    if (playedCards.length === 0) return true;
     // check last card of current hand and compare to last card of selected cards
     return isCardHigher(cards[cards.length - 1], currentHand.cards[currentHand.cards.length - 1]);
   }
 
   const playHand = () => {
+    console.log('play hand', selectedCards);
     if (isCardPlayable(selectedCards)) {
       const newHand = hand.filter(card => !selectedCards.some(selectedCard => selectedCard.rank === card.rank && selectedCard.suit === card.suit));
       console.log('selected cards', selectedCards);
@@ -148,9 +151,53 @@ const Player: React.FC<PlayerProps> = ({ initialHand, onPlayCards, isCurrentPlay
     onPass();
   }
 
+  const autoSelectAndPlayCards = useCallback(() => {
+    const generateCombinations = (hand: CardType[]): CardType[][] => {
+      const results: CardType[][] = [];
+  
+      const generate = (start: number, combo: CardType[]): void => {
+        for (let i = start; i < hand.length; i++) {
+          const newCombo = [...combo, hand[i]];
+          results.push(newCombo);
+          generate(i + 1, newCombo);
+        }
+      }
+  
+      generate(0, []);
+      return results;
+    }
+
+    const combinations = generateCombinations(hand);
+    const playableCombinations = combinations.filter(combination => isCardPlayable(combination));
+    
+    console.log('playableCombinations', playableCombinations);
+    if (playableCombinations.length > 0) {
+      const bestCombination = playableCombinations[0];
+      console.log('bestCombination', bestCombination);
+      setSelectedCards(bestCombination);
+    } else {
+      passTurn();
+    }
+  }, [hand, isCardPlayable]);
+
+  useEffect(() => {
+    if (isCurrentPlayer && !isUserControlled) {
+      autoSelectAndPlayCards();
+    }
+  }, [isCurrentPlayer, isUserControlled]);
+
+  useEffect(() => {
+    if (selectedCards.length > 0 && !isUserControlled) {
+      playHand();
+    }
+  }, [selectedCards]);
+
+  console.log('hand', hand);
+
   return (
     <div className={`${isCurrentPlayer ? classNames['active-player'] : ''} ${classNames.player}`}>
-      <h2>Player's Hand</h2>
+      {isUserControlled && <h2>Your Hand</h2>}
+      {!isUserControlled && <h2>Player's Hand</h2>}
       {selectedCards.length > 0 && isCurrentPlayer && 
         <button onClick={playHand}>Play cards</button>
       }
@@ -165,12 +212,17 @@ const Player: React.FC<PlayerProps> = ({ initialHand, onPlayCards, isCurrentPlay
       <div className={classNames.hand}>
         {
           hand.map((card, index) => (
-            <Card 
-              key={index} 
-              card={card} 
-              onClick={handleCardSelect}
-              selected={selectedCards.some(selectedCard => selectedCard.rank === card.rank && selectedCard.suit === card.suit)}
-              />
+            <div
+              key={index}
+              className={classNames.cardContainer}
+              style={{left: `${index * 30}px`}}
+              onClick={() => handleCardSelect(card)}
+            >
+              <Card 
+                card={card} 
+                selected={selectedCards.some(selectedCard => selectedCard.rank === card.rank && selectedCard.suit === card.suit)}
+                />
+            </div>
           ))
         }
       </div>

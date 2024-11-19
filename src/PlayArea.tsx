@@ -4,6 +4,7 @@ import Player from './Player';
 import classNames from './App.module.css';
 import { useGameContext } from './GameContext';
 import { getHandType } from './HandTypeUtils';
+import Card from './Card';
 
 interface PlayAreaProps {
   playerHands: CardType[][];
@@ -40,39 +41,43 @@ const PlayArea: React.FC<PlayAreaProps> = ({ playerHands, onPlayCards }) => {
   ]
   return (
     <div className={classNames.playArea}>
-      <div className="play-area">
-        {
-          playedCards.map((card, index) => (
-            <div key={index} className={classNames.playedCard}>
-              <span>{card.rank}</span>
-              <span>{card.suit}</span>
-            </div>
-          ))
-        }
+      {currentHandType && <div className="current-hand-type">Current Hand Type: {currentHandType}</div>}
 
-        {currentHandType && <div className="current-hand-type">Current Hand Type: {currentHandType}</div>}
-
-        { handHistory.length > 0 && <div className="hand-history">
-          <h3>Hand History</h3>
-          {handHistory.map((entry, index) => (
-            <div key={index} className="entry">
-              <span>Hand Type: {entry.handType}</span>
-              {entry.cards.map((card, cardIndex) => (
-                <span key={cardIndex}>{card.rank} {card.suit}</span>
-              ))}
-            </div>
-          ))}
-        </div>}
-      </div>
-      {playerHands.map((hand, index) => (
-        <Player 
-          key={index} 
-          initialHand={hand} 
-          onPlayCards={handlePlayCards}
-          isCurrentPlayer={index === currentPlayer}
-          onPass={handlePass}
-          />
-      ))}
+      { handHistory.length > 0 && <div className={classNames.handHistoryContainer}>
+        <h3>Hand History</h3>
+        {handHistory.map((entry, index) => (
+          <div key={index} className="entry">
+            <span>Hand Type: {entry.handType}</span>
+            {entry.cards.map((card, cardIndex) => (
+              <div 
+                className={classNames.cardContainer}
+                key={cardIndex}
+                style={{ marginLeft: `${cardIndex * 30}px` }}
+              >
+                <Card 
+                key={cardIndex}
+                card={{...card, hidden: false}} 
+                />
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>}
+      {playerHands.map((hand, index) => {
+        const positionClass = index === 0 ? 'bottom' : index === 1 ? 'top' : index === 2 ? 'left' : 'right';
+        const isUserControlled = index === 0;
+        return (
+          <div key={index} className={`${classNames.playerHand} ${classNames[positionClass]}`}>
+            <Player 
+              initialHand={hand} 
+              onPlayCards={handlePlayCards}
+              isCurrentPlayer={index === currentPlayer}
+              onPass={handlePass}
+              isUserControlled={isUserControlled}
+            />
+          </div>
+        );
+      })}
     </div>
   );
 };

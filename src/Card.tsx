@@ -98,22 +98,30 @@ const Card: React.FC<CardProps> = ({card, onClick, selected}) => {
   return (
     <div
       onClick={() => onClick && onClick(card)}
-      className={`${styles.card} ${selected ? styles.selected : ""}`}
+      className={`${styles.card} ${selected ? styles.selected : ""} ${card.hidden ? styles.hidden : ''}`}
       style={{ color: suitColor }}
     >
-      <div className={styles.topLeft}>
-        <p className={styles.number}>{card.rank}</p>
-        <div className={`${styles.suit} ${styles[card.suit]}`} ></div>
-      </div>
-
-      <div className={styles.centerArea}>
-        {renderSuitArea()}
-      </div>
-
-      <div className={styles.bottomRight}>
-        <p className={styles.number}>{card.rank}</p>
-        <div className={`${styles.suit} ${styles[card.suit]}`} ></div>
-      </div>
+      {card.hidden ? (
+        <div className={styles.cardBack}>
+          <span>🂠</span>
+        </div>
+      ) : (
+        <React.Fragment>
+          <div className={styles.topLeft}>
+            <p className={styles.number}>{card.rank}</p>
+            <div className={`${styles.suit} ${styles[card.suit]}`} ></div>
+          </div>
+      
+          <div className={styles.centerArea}>
+            {renderSuitArea()}
+          </div>
+      
+          <div className={styles.bottomRight}>
+            <p className={styles.number}>{card.rank}</p>
+            <div className={`${styles.suit} ${styles[card.suit]}`} ></div>
+          </div>
+        </React.Fragment>
+      )}
     </div>
   )
 }

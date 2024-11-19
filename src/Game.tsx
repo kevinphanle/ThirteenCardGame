@@ -45,8 +45,10 @@ const Game: React.FC = () => {
   return (
     <div className={classNames.board}>
       <h1>Card Game</h1>
-      <button onClick={handleDeal}>Deal</button>
-      <button onClick={handleReset}>Reset</button>
+      <div className={classNames.btnContainer}>
+        <button onClick={handleDeal}>Deal</button>
+        <button onClick={handleReset}>Reset</button>
+      </div>
 
       <PlayArea 
         playerHands={playerHands} 

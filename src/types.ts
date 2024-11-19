@@ -5,4 +5,5 @@ export interface Card {
   suit: Suit;
   rank: Rank;
   ownerIndex: number;
+  hidden?: boolean;
 }
