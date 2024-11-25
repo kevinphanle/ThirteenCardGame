@@ -1,22 +1,9 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
-import { Card, Card as CardType } from "./types";
+import { Card as CardType, GameContextProps } from "./types";
 
 interface HandHistoryEntry {
     cards: CardType[];
     handType: string | null;
-}
-
-interface GameContextProps {
-    playerHands: CardType[][];
-    setPlayerHands: React.Dispatch<React.SetStateAction<CardType[][]>>;
-    playedCards: CardType[];
-    setPlayedCards: React.Dispatch<React.SetStateAction<CardType[]>>;
-    currentPlayer: number;
-    setCurrentPlayer: React.Dispatch<React.SetStateAction<number>>;
-    currentHandType: string | null;
-    setCurrentHandType: React.Dispatch<React.SetStateAction<string | null>>;
-    handHistory: HandHistoryEntry[];
-    setHandHistory: React.Dispatch<React.SetStateAction<HandHistoryEntry[]>>;
 }
 
 const GameContext = createContext<GameContextProps | undefined>(undefined);
