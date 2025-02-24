@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { Card as CardType } from "./types";
-import classNames from './App.module.css'
+import classNames from "./App.module.css";
 import Card from "./Card";
 import { useGameContext } from "./GameContext";
 import { getHandType } from "./HandTypeUtils";
@@ -15,24 +15,57 @@ interface PlayerProps {
   isUserControlled?: boolean;
 }
 
-const rankOrder = ['3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A', '2'];
-const suitOrder = ['Spades', 'Clubs', 'Diamonds', 'Hearts'];
+const rankOrder = [
+  "3",
+  "4",
+  "5",
+  "6",
+  "7",
+  "8",
+  "9",
+  "10",
+  "J",
+  "Q",
+  "K",
+  "A",
+  "2",
+];
+const suitOrder = ["Spades", "Clubs", "Diamonds", "Hearts"];
+const AI_PLAY_DELAY = 1000; // 1 second delay
 
-const Player: React.FC<PlayerProps> = ({ initialHand, onPlayCards, isCurrentPlayer, onPass, isUserControlled}) => {
-  const [hand, setHand] = useState<CardType[]>(initialHand.map(card => ({ ...card, hidden: !isUserControlled })));
+const Player: React.FC<PlayerProps> = ({
+  initialHand,
+  onPlayCards,
+  isCurrentPlayer,
+  onPass,
+  isUserControlled,
+}) => {
+  const [hand, setHand] = useState<CardType[]>(
+    initialHand.map((card) => ({ ...card, hidden: !isUserControlled }))
+  );
   const [selectedCards, setSelectedCards] = useState<CardType[]>([]);
   const [handType, setHandType] = useState<string | null>(null);
-  const {setCurrentHandType, handHistory, setHandHistory} = useGameContext();
+  const { setCurrentHandType, handHistory, setHandHistory } = useGameContext();
 
   useEffect(() => {
-    setHand(sortHand(initialHand.map(card => ({ ...card, hidden: !isUserControlled }))));
+    setHand(
+      sortHand(
+        initialHand.map((card) => ({ ...card, hidden: !isUserControlled }))
+      )
+    );
   }, [initialHand, isUserControlled]);
 
   const handleCardSelect = (card: CardType) => {
-    const isSelected = selectedCards.some(selectedCard => selectedCard.rank === card.rank && selectedCard.suit === card.suit);
+    const isSelected = selectedCards.some(
+      (selectedCard) =>
+        selectedCard.rank === card.rank && selectedCard.suit === card.suit
+    );
 
-    const newSelectedCards = isSelected 
-      ? selectedCards.filter(selectedCard => selectedCard.rank !== card.rank || selectedCard.suit !== card.suit) 
+    const newSelectedCards = isSelected
+      ? selectedCards.filter(
+          (selectedCard) =>
+            selectedCard.rank !== card.rank || selectedCard.suit !== card.suit
+        )
       : [...selectedCards, card];
 
     setSelectedCards(newSelectedCards);
@@ -42,27 +75,26 @@ const Player: React.FC<PlayerProps> = ({ initialHand, onPlayCards, isCurrentPlay
 
   const checkForPossiblePairs = (cards: CardType[]): boolean => {
     const rankCounts: { [key: string]: number } = {};
-    cards.forEach(card => {
+    cards.forEach((card) => {
       rankCounts[card.rank] = (rankCounts[card.rank] || 0) + 1;
-    })
+    });
 
-    return Object.values(rankCounts).some(count => count >= 2);
-  }
+    return Object.values(rankCounts).some((count) => count >= 2);
+  };
 
   const checkForPossibleTriples = (cards: CardType[]): boolean => {
     const rankCounts: { [key: string]: number } = {};
-    cards.forEach(card => {
+    cards.forEach((card) => {
       rankCounts[card.rank] = (rankCounts[card.rank] || 0) + 1;
-    })
+    });
 
-    return Object.values(rankCounts).some(count => count >= 3);
-  }
+    return Object.values(rankCounts).some((count) => count >= 3);
+  };
 
   const checkForPossibleStraights = (cards: CardType[]): boolean => {
     const sortedRanks = cards
-      .map(card => rankOrder.indexOf(card.rank))
+      .map((card) => rankOrder.indexOf(card.rank))
       .sort((a, b) => a - b);
-
 
     let consecutiveCount = 1;
 
@@ -77,7 +109,7 @@ const Player: React.FC<PlayerProps> = ({ initialHand, onPlayCards, isCurrentPlay
       }
     }
     return false;
-  }
+  };
 
   const checkForPossibleCombinations = (cards: CardType[]): string[] => {
     const possibleCombinations: string[] = [];
@@ -95,85 +127,126 @@ const Player: React.FC<PlayerProps> = ({ initialHand, onPlayCards, isCurrentPlay
       possibleCombinations.push("Straight");
     }
 
-    return possibleCombinations
-  }
-  
-  const possibleCombinations = useMemo(() => checkForPossibleCombinations(hand), [hand]);
+    return possibleCombinations;
+  };
 
-  const isCardHigher = (card: CardType, latestPlayedCard: CardType): boolean => {
-    const rankOrderForComparison = (handType === 'Pair' || handType === 'Single') ? rankOrder : rankOrder.slice(0, -1);
-    if (rankOrderForComparison.indexOf(card.rank) === rankOrderForComparison.indexOf(latestPlayedCard.rank)) {
-      return suitOrder.indexOf(card.suit) > suitOrder.indexOf(latestPlayedCard.suit);
+  const possibleCombinations = useMemo(
+    () => checkForPossibleCombinations(hand),
+    [hand]
+  );
+
+  const isCardHigher = (
+    card: CardType,
+    latestPlayedCard: CardType
+  ): boolean => {
+    const rankOrderForComparison =
+      handType === "Pair" || handType === "Single"
+        ? rankOrder
+        : rankOrder.slice(0, -1);
+    if (
+      rankOrderForComparison.indexOf(card.rank) ===
+      rankOrderForComparison.indexOf(latestPlayedCard.rank)
+    ) {
+      return (
+        suitOrder.indexOf(card.suit) > suitOrder.indexOf(latestPlayedCard.suit)
+      );
     }
-    const isHigher = rankOrderForComparison.indexOf(card.rank) > rankOrderForComparison.indexOf(latestPlayedCard.rank)
+    const isHigher =
+      rankOrderForComparison.indexOf(card.rank) >
+      rankOrderForComparison.indexOf(latestPlayedCard.rank);
     return isHigher;
-  }
+  };
 
   const isCardPlayable = (cards: CardType[]): boolean => {
     const selectedHandType = getHandType(cards);
     const currentHand = handHistory[handHistory.length - 1];
 
-    if (handHistory.length === 0 && selectedHandType ) {
+    // if no cards have been played yet, any hand is playable
+    if (handHistory.length === 0 && selectedHandType) {
       return true;
-    } 
+    }
 
-    if (selectedHandType !== currentHand?.handType || currentHand?.cards.length !== cards.length || selectedHandType === null) {
+    // check if everyone else has passed
+    const consecutivePasses = handHistory.slice(-3).every((entry) => {
+      return entry.cards.length === 0;
+    });
+
+    if (consecutivePasses && selectedHandType) {
+      return true;
+    }
+
+    if (
+      selectedHandType !== currentHand?.handType ||
+      currentHand?.cards.length !== cards.length ||
+      selectedHandType === null
+    ) {
       return false;
     }
 
     // check last card of current hand and compare to last card of selected cards
-    return isCardHigher(cards[cards.length - 1], currentHand.cards[currentHand.cards.length - 1]);
-  }
+    return isCardHigher(
+      cards[cards.length - 1],
+      currentHand.cards[currentHand.cards.length - 1]
+    );
+  };
 
   const playHand = () => {
-    console.log('play hand', selectedCards);
     if (isCardPlayable(selectedCards)) {
-      const newHand = hand.filter(card => !selectedCards.some(selectedCard => selectedCard.rank === card.rank && selectedCard.suit === card.suit));
-      console.log('selected cards', selectedCards);
+      const newHand = hand.filter(
+        (card) =>
+          !selectedCards.some(
+            (selectedCard) =>
+              selectedCard.rank === card.rank && selectedCard.suit === card.suit
+          )
+      );
       setHand(newHand);
       if (onPlayCards) {
         const handType = getHandType(selectedCards);
         setCurrentHandType(handType);
         onPlayCards(selectedCards);
-        setHandHistory([...handHistory, {cards: selectedCards, handType: handType}]);
+        setHandHistory([
+          ...handHistory,
+          { cards: selectedCards, handType: handType },
+        ]);
         setSelectedCards([]);
       } else {
-        console.error('onPlayCards not provided');
+        console.error("onPlayCards not provided");
       }
     } else {
-      console.error('Selected cards are not playable');
+      console.error("Selected cards are not playable");
     }
-  }
+  };
 
   const passTurn = () => {
     setSelectedCards([]);
     setHandType(null);
     onPass();
-  }
+  };
 
   const autoSelectAndPlayCards = useCallback(() => {
     const generateCombinations = (hand: CardType[]): CardType[][] => {
       const results: CardType[][] = [];
-  
+
       const generate = (start: number, combo: CardType[]): void => {
         for (let i = start; i < hand.length; i++) {
           const newCombo = [...combo, hand[i]];
           results.push(newCombo);
           generate(i + 1, newCombo);
         }
-      }
-  
+      };
+
       generate(0, []);
       return results;
-    }
+    };
 
     const combinations = generateCombinations(hand);
-    const playableCombinations = combinations.filter(combination => isCardPlayable(combination));
-    
-    console.log('playableCombinations', playableCombinations);
+    const playableCombinations = combinations.filter((combination) =>
+      isCardPlayable(combination)
+    );
+
     if (playableCombinations.length > 0) {
       const bestCombination = playableCombinations[0];
-      console.log('bestCombination', bestCombination);
+      console.log("bestCombination", bestCombination);
       setSelectedCards(bestCombination);
     } else {
       passTurn();
@@ -182,52 +255,70 @@ const Player: React.FC<PlayerProps> = ({ initialHand, onPlayCards, isCurrentPlay
 
   useEffect(() => {
     if (isCurrentPlayer && !isUserControlled) {
-      autoSelectAndPlayCards();
+      const timeoutId = setTimeout(() => {
+        autoSelectAndPlayCards();
+      }, AI_PLAY_DELAY);
+
+      return () => {
+        clearTimeout(timeoutId);
+      };
     }
-  }, [isCurrentPlayer, isUserControlled]);
+  }, [isCurrentPlayer, isUserControlled, autoSelectAndPlayCards]);
 
   useEffect(() => {
     if (selectedCards.length > 0 && !isUserControlled) {
-      playHand();
-    }
-  }, [selectedCards]);
+      const timeoutId = setTimeout(() => {
+        playHand();
+      }, AI_PLAY_DELAY);
 
-  console.log('hand', hand);
+      return () => {
+        clearTimeout(timeoutId);
+      };
+    }
+  }, [selectedCards, isUserControlled]);
 
   return (
-    <div className={`${isCurrentPlayer ? classNames['active-player'] : ''} ${classNames.player}`}>
+    <div
+      className={`${isCurrentPlayer ? classNames["active-player"] : ""} ${
+        classNames.player
+      }`}
+    >
       {isUserControlled && <h2>Your Hand</h2>}
       {!isUserControlled && <h2>Player's Hand</h2>}
-      {selectedCards.length > 0 && isCurrentPlayer && 
+      {selectedCards.length > 0 && isCurrentPlayer && (
         <button onClick={playHand}>Play cards</button>
-      }
+      )}
 
       {handType && <p>Hand Type: {handType}</p>}
 
       <p>Possible Combinations: {possibleCombinations}</p>
-      {isCurrentPlayer && handHistory.length > 0 && 
-        <button onClick={passTurn} className={classNames.passBtn}>Pass</button>
-      }
+      {isCurrentPlayer && handHistory.length > 0 && (
+        <button onClick={passTurn} className={classNames.passBtn}>
+          Pass
+        </button>
+      )}
 
       <div className={classNames.hand}>
-        {
-          hand.map((card, index) => (
-            <div
-              key={index}
-              className={classNames.cardContainer}
-              style={{left: `${index * 30}px`}}
-              onClick={() => handleCardSelect(card)}
-            >
-              <Card 
-                card={card} 
-                selected={selectedCards.some(selectedCard => selectedCard.rank === card.rank && selectedCard.suit === card.suit)}
-                />
-            </div>
-          ))
-        }
+        {hand.map((card, index) => (
+          <div
+            key={index}
+            className={classNames.cardContainer}
+            style={{ left: `${index * 30}px` }}
+            onClick={() => handleCardSelect(card)}
+          >
+            <Card
+              card={card}
+              selected={selectedCards.some(
+                (selectedCard) =>
+                  selectedCard.rank === card.rank &&
+                  selectedCard.suit === card.suit
+              )}
+            />
+          </div>
+        ))}
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default Player;

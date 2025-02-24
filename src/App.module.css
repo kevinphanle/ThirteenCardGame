@@ -72,7 +72,7 @@
   padding: 1rem;
   border-radius: 8px;
   background-color: #ccc;
-  box-shadow: 0 4px 8px rgba(0,0,0,.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .cardContainer {
@@ -99,7 +99,7 @@
   align-items: center;
   padding: 1em 1.2em;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  
+
   &:hover {
     transform: translateY(-5px);
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
@@ -117,7 +117,7 @@
   .number {
     font-size: 1.5rem;
     font-weight: 500;
-    margin-bottom: -.35rem;
+    margin-bottom: -0.35rem;
   }
 
   .suit {
@@ -132,8 +132,8 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    letter-spacing: -.1em;
-    font-size: .8em;
+    letter-spacing: -0.1em;
+    font-size: 0.8em;
 
     .suit {
       width: 10px;
@@ -143,12 +143,12 @@
 
   .topLeft {
     top: 0;
-    left: .3rem;
+    left: 0.3rem;
   }
 
   .bottomRight {
     bottom: 0;
-    right: .3rem;
+    right: 0.3rem;
     transform: rotate(180deg);
   }
 
@@ -347,8 +347,6 @@
     grid-column-start: 2;
   }
 }
-
-
 
 .six .suit {
   &:first-child {
@@ -576,8 +574,6 @@
   }
 }
 
-
-
 .player {
   width: 100%;
   box-sizing: border-box;
@@ -617,4 +613,15 @@
   width: 100%;
   box-sizing: border-box;
   height: 300px;
+}
+
+.handHistoryContainer h3 {
+  cursor: pointer;
+  user-select: none;
+}
+
+.handHistoryContainer .entry {
+  margin-bottom: 10px;
+  padding: 5px;
+  border-bottom: 1px solid #eee;
 }
