@@ -20,6 +20,13 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+.startMessage {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.5rem;
+  color: #555;
+}
+
 .playArea {
   /* position: relative; */
   display: flex;
@@ -81,7 +88,7 @@
 }
 
 .card {
-  --width: 5em;
+  --width: 3.5em;
   --height: calc(var(--width) * 1.4);
   width: var(--width);
   height: var(--height);
@@ -127,17 +134,16 @@
   .topLeft,
   .bottomRight {
     position: absolute;
-    font-size: 1rem;
+    font-size: 0.7em;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     letter-spacing: -0.1em;
-    font-size: 0.8em;
 
     .suit {
-      width: 10px;
-      height: 10px;
+      width: 8px;
+      height: 8px;
     }
   }
 
@@ -596,7 +602,7 @@
 .hand {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.4rem; /* Reduced from 0.5rem */
   position: relative;
   height: 150px;
   min-width: 500px;
@@ -624,4 +630,67 @@
   margin-bottom: 10px;
   padding: 5px;
   border-bottom: 1px solid #eee;
+}
+
+/* Add to your App.module.css */
+.gameTable {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.middleSection {
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+  position: relative;
+}
+
+.topPlayer,
+.bottomPlayer {
+  height: 150px;
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.leftPlayer,
+.rightPlayer {
+  width: 200px;
+  height: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.leftPlayer {
+  /* Rotate cards for left player */
+  transform: rotate(90deg);
+  transform-origin: center left;
+}
+
+.rightPlayer {
+  /* Rotate cards for right player */
+  transform: rotate(-90deg);
+  transform-origin: center right;
+}
+
+.topPlayer {
+  /* Rotate cards for top player */
+  transform: rotate(180deg);
+}
+
+.centerPlayArea {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #1a6127;
+  border-radius: 16px;
+  padding: 20px;
+  margin: 20px;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3);
 }

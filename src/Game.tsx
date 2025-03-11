@@ -1,37 +1,46 @@
 import React, { useState } from "react";
 import { createDeck } from "./deck";
-import { Card as CardType } from './types';
+import { Card as CardType } from "./types";
 import { useGameContext } from "./GameContext";
 
 import PlayArea from "./PlayArea";
-import { dealCards } from './deal';
+import { dealCards } from "./deal";
 
-import classNames from './App.module.css'
-
+import classNames from "./App.module.css";
 
 const Game: React.FC = () => {
-  const [deck, setDeck] = useState<CardType[]>(createDeck())
-  const {playerHands, setPlayerHands, setPlayedCards, setCurrentHandType, setHandHistory, currentPlayer, setCurrentPlayer} = useGameContext(); 
+  const [deck, setDeck] = useState<CardType[]>(createDeck());
+  const {
+    playerHands,
+    setPlayerHands,
+    setPlayedCards,
+    setCurrentHandType,
+    setHandHistory,
+    currentPlayer,
+    setCurrentPlayer,
+  } = useGameContext();
 
   const handleReset = () => {
-    setDeck(createDeck())
-    setPlayerHands([])
-    setPlayedCards([])
-    setCurrentPlayer(0)
-    setCurrentHandType(null)
-    setHandHistory([])
-  }
+    setDeck(createDeck());
+    setPlayerHands([]);
+    setPlayedCards([]);
+    setCurrentPlayer(0);
+    setCurrentHandType(null);
+    setHandHistory([]);
+  };
 
   const handleDeal = () => {
-    setPlayerHands([])
+    setPlayerHands([]);
     const hands = dealCards(deck, 4);
-    setPlayerHands(hands)
+    setPlayerHands(hands);
     setCurrentPlayer(findPlayerWith3OfSpades(hands));
-  }
+  };
 
   const findPlayerWith3OfSpades = (hands: CardType[][]): number => {
-    return hands.findIndex(hand => hand.some(card => card.rank === '3' && card.suit === 'Spades'));
-  }
+    return hands.findIndex((hand) =>
+      hand.some((card) => card.rank === "3" && card.suit === "Spades")
+    );
+  };
 
   const handlePlayCards = (cards: CardType[]) => {
     setPlayedCards((prevPlayed) => [...prevPlayed, ...cards]);
@@ -40,7 +49,7 @@ const Game: React.FC = () => {
 
   const advanceTurn = () => {
     setCurrentPlayer((currentPlayer + 1) % playerHands.length);
-  }
+  };
 
   return (
     <div className={classNames.board}>
@@ -50,12 +59,15 @@ const Game: React.FC = () => {
         <button onClick={handleReset}>Reset</button>
       </div>
 
-      <PlayArea 
-        playerHands={playerHands} 
-        onPlayCards={handlePlayCards}
-        />
+      {playerHands.length > 0 ? (
+        <PlayArea playerHands={playerHands} onPlayCards={handlePlayCards} />
+      ) : (
+        <div className={classNames.startMessage}>
+          <p>Click "Deal" to start the game</p>
+        </div>
+      )}
     </div>
-  )
-}
+  );
+};
 
 export default Game;

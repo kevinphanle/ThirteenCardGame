@@ -283,8 +283,8 @@ const Player: React.FC<PlayerProps> = ({
         classNames.player
       }`}
     >
-      {isUserControlled && <h2>Your Hand</h2>}
-      {!isUserControlled && <h2>Player's Hand</h2>}
+      {isUserControlled && <p>Your Hand</p>}
+      {!isUserControlled && <p>Player's Hand</p>}
       {selectedCards.length > 0 && isCurrentPlayer && (
         <button onClick={playHand}>Play cards</button>
       )}

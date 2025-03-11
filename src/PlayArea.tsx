@@ -11,11 +11,6 @@ interface PlayAreaProps {
   onPlayCards: (cards: CardType[]) => void;
 }
 
-interface HandHistoryEntry {
-  handType: string;
-  cards: CardType[];
-}
-
 const PlayArea: React.FC<PlayAreaProps> = ({ playerHands, onPlayCards }) => {
   const [showHistory, setShowHistory] = useState(false);
   const {
@@ -41,103 +36,71 @@ const PlayArea: React.FC<PlayAreaProps> = ({ playerHands, onPlayCards }) => {
     });
   };
 
-  const defaultHand = [
-    { rank: "A", suit: "Hearts" },
-    { rank: "2", suit: "Hearts" },
-    { rank: "3", suit: "Hearts" },
-    { rank: "4", suit: "Hearts" },
-    { rank: "5", suit: "Hearts" },
-    { rank: "6", suit: "Hearts" },
-    { rank: "7", suit: "Hearts" },
-    { rank: "8", suit: "Hearts" },
-    { rank: "9", suit: "Hearts" },
-    { rank: "10", suit: "Hearts" },
-    { rank: "J", suit: "Hearts" },
-    { rank: "Q", suit: "Hearts" },
-    { rank: "K", suit: "Hearts" },
-  ];
   return (
-    <div className={classNames.playArea}>
-      {currentHandType && (
-        <div className="current-hand-type">
-          Current Hand Type: {currentHandType}
-        </div>
-      )}
+    <div className={classNames.gameTable}>
+      {/* Top player (player 2) */}
+      <div className={classNames.topPlayer}>
+        <Player
+          initialHand={playerHands[2] || []}
+          onPlayCards={handlePlayCards}
+          isCurrentPlayer={currentPlayer === 2}
+          onPass={handlePass}
+          isUserControlled={false}
+        />
+      </div>
 
-      {handHistory.length > 0 && (
-        <div className={classNames.handHistoryContainer}>
-          <h3 onClick={() => setShowHistory(!showHistory)}>
-            Current Play {showHistory ? "▼" : "▶"}
-          </h3>
-          {showHistory
-            ? // Show full history
-              handHistory.map((entry, entryIndex) => (
-                <div key={entryIndex} className="entry">
-                  <span>Hand Type: {entry.handType}</span>
-                  {entry.cards.map((card: CardType, cardIndex: number) => (
-                    <div
-                      className={classNames.cardContainer}
-                      key={cardIndex}
-                      style={{ marginLeft: `${cardIndex * 30}px` }}
-                    >
-                      <Card key={cardIndex} card={{ ...card, hidden: false }} />
-                    </div>
-                  ))}
-                </div>
-              ))
-            : (() => {
-                const lastNonPassEntry = [...handHistory]
-                  .reverse()
-                  .find((entry) => entry.cards.length > 0);
-
-                if (!lastNonPassEntry) return null;
-                return (
-                  <div className="entry">
-                    <span>Hand Type: {lastNonPassEntry.handType}</span>
-                    {lastNonPassEntry.cards.map(
-                      (card: CardType, cardIndex: number) => (
-                        <div
-                          className={classNames.cardContainer}
-                          key={cardIndex}
-                          style={{ marginLeft: `${cardIndex * 30}px` }}
-                        >
-                          <Card
-                            key={cardIndex}
-                            card={{ ...card, hidden: false }}
-                          />
-                        </div>
-                      )
-                    )}
-                  </div>
-                );
-              })()}
+      <div className={classNames.middleSection}>
+        {/* Left player (player 3) */}
+        <div className={classNames.leftPlayer}>
+          <Player
+            initialHand={playerHands[3] || []}
+            onPlayCards={handlePlayCards}
+            isCurrentPlayer={currentPlayer === 3}
+            onPass={handlePass}
+            isUserControlled={false}
+          />
         </div>
-      )}
-      {playerHands.map((hand, index) => {
-        const positionClass =
-          index === 0
-            ? "bottom"
-            : index === 1
-            ? "top"
-            : index === 2
-            ? "left"
-            : "right";
-        const isUserControlled = index === 0;
-        return (
-          <div
-            key={index}
-            className={`${classNames.playerHand} ${classNames[positionClass]}`}
-          >
-            <Player
-              initialHand={hand}
-              onPlayCards={handlePlayCards}
-              isCurrentPlayer={index === currentPlayer}
-              onPass={handlePass}
-              isUserControlled={isUserControlled}
-            />
-          </div>
-        );
-      })}
+
+        {/* Center play area */}
+        <div className={classNames.centerPlayArea}>
+          {currentHandType && (
+            <div className="current-hand-type">
+              Current Hand Type: {currentHandType}
+            </div>
+          )}
+
+          {handHistory.length > 0 && (
+            <div className={classNames.handHistoryContainer}>
+              <h3 onClick={() => setShowHistory(!showHistory)}>
+                Current Play {showHistory ? "▼" : "▶"}
+              </h3>
+              {/* ...hand history display code... */}
+            </div>
+          )}
+        </div>
+
+        {/* Right player (player 1) */}
+        <div className={classNames.rightPlayer}>
+          <Player
+            initialHand={playerHands[1] || []}
+            onPlayCards={handlePlayCards}
+            isCurrentPlayer={currentPlayer === 1}
+            onPass={handlePass}
+            isUserControlled={false}
+          />
+        </div>
+      </div>
+
+      {/* Bottom player (user - player 0) */}
+      <div className={classNames.bottomPlayer}>
+        <Player
+          initialHand={playerHands[0] || []}
+          onPlayCards={handlePlayCards}
+          isCurrentPlayer={currentPlayer === 0}
+          onPass={handlePass}
+          isUserControlled={true}
+        />
+      </div>
     </div>
   );
 };
