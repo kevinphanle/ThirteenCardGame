@@ -179,18 +179,45 @@
 
 .hidden {
   transform: rotateY(180deg);
+  padding: 0.5em;
 }
 
 .cardBack {
-  background-color: blue; /* Change this to your desired color */
   width: 100%;
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white; /* Change this to your desired text color */
-  font-size: 2rem; /* Change this to your desired font size */
+  background-color: #1a6127; /* Green background like a playing card */
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
 }
+
+.cardBackPattern {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0.1) 10px,
+    rgba(255, 255, 255, 0.2) 10px,
+    rgba(255, 255, 255, 0.2) 20px
+  );
+}
+
+/* .cardBack:after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+  height: 80%;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+} */
 
 .selected {
   border: 2px solid #007bff;
@@ -622,6 +649,7 @@
   background-color: #e0f7ff;
   border: 1px solid blue;
   padding: 1rem;
+  height: 300px;
 }
 
 .hand {

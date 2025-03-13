@@ -135,31 +135,6 @@ const Player: React.FC<PlayerProps> = ({
     [hand]
   );
 
-  const isCardHigher = (
-    card: CardType,
-    latestPlayedCard: CardType
-  ): boolean => {
-    const rankOrderForComparison =
-      handType === "Pair" || handType === "Single"
-        ? rankOrder
-        : rankOrder.slice(0, -1);
-    // Get the indices of both cards in the rank order array
-    const cardRankIndex = rankOrderForComparison.indexOf(card.rank);
-    const latestCardRankIndex = rankOrderForComparison.indexOf(
-      latestPlayedCard.rank
-    );
-
-    // If ranks are the same, compare by suit
-    if (cardRankIndex === latestCardRankIndex) {
-      return (
-        suitOrder.indexOf(card.suit) > suitOrder.indexOf(latestPlayedCard.suit)
-      );
-    }
-
-    // Compare by rank (higher index means higher rank)
-    return cardRankIndex > latestCardRankIndex;
-  };
-
   const isCardHigherWithType = (
     card: CardType,
     latestPlayedCard: CardType,
