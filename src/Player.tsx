@@ -143,18 +143,47 @@ const Player: React.FC<PlayerProps> = ({
       handType === "Pair" || handType === "Single"
         ? rankOrder
         : rankOrder.slice(0, -1);
-    if (
-      rankOrderForComparison.indexOf(card.rank) ===
-      rankOrderForComparison.indexOf(latestPlayedCard.rank)
-    ) {
+    // Get the indices of both cards in the rank order array
+    const cardRankIndex = rankOrderForComparison.indexOf(card.rank);
+    const latestCardRankIndex = rankOrderForComparison.indexOf(
+      latestPlayedCard.rank
+    );
+
+    // If ranks are the same, compare by suit
+    if (cardRankIndex === latestCardRankIndex) {
       return (
         suitOrder.indexOf(card.suit) > suitOrder.indexOf(latestPlayedCard.suit)
       );
     }
-    const isHigher =
-      rankOrderForComparison.indexOf(card.rank) >
-      rankOrderForComparison.indexOf(latestPlayedCard.rank);
-    return isHigher;
+
+    // Compare by rank (higher index means higher rank)
+    return cardRankIndex > latestCardRankIndex;
+  };
+
+  const isCardHigherWithType = (
+    card: CardType,
+    latestPlayedCard: CardType,
+    handTypeToUse: string | null
+  ): boolean => {
+    const rankOrderForComparison =
+      handTypeToUse === "Pair" || handTypeToUse === "Single"
+        ? rankOrder
+        : rankOrder.slice(0, -1);
+    // Get the indices of both cards in the rank order array
+    const cardRankIndex = rankOrderForComparison.indexOf(card.rank);
+    const latestCardRankIndex = rankOrderForComparison.indexOf(
+      latestPlayedCard.rank
+    );
+
+    // If ranks are the same, compare by suit
+    if (cardRankIndex === latestCardRankIndex) {
+      return (
+        suitOrder.indexOf(card.suit) > suitOrder.indexOf(latestPlayedCard.suit)
+      );
+    }
+
+    // Compare by rank (higher index means higher rank)
+    return cardRankIndex > latestCardRankIndex;
   };
 
   const isCardPlayable = (cards: CardType[]): boolean => {
@@ -184,9 +213,10 @@ const Player: React.FC<PlayerProps> = ({
     }
 
     // check last card of current hand and compare to last card of selected cards
-    return isCardHigher(
+    return isCardHigherWithType(
       cards[cards.length - 1],
-      currentHand.cards[currentHand.cards.length - 1]
+      currentHand.cards[currentHand.cards.length - 1],
+      selectedHandType
     );
   };
 
@@ -224,34 +254,107 @@ const Player: React.FC<PlayerProps> = ({
   };
 
   const autoSelectAndPlayCards = useCallback(() => {
-    const generateCombinations = (hand: CardType[]): CardType[][] => {
-      const results: CardType[][] = [];
+    // Check if everyone has passed or no cards have been played
+    const startNewHand =
+      handHistory.length === 0 ||
+      handHistory.slice(-3).every((entry) => entry.cards.length === 0);
 
-      const generate = (start: number, combo: CardType[]): void => {
-        for (let i = start; i < hand.length; i++) {
-          const newCombo = [...combo, hand[i]];
-          results.push(newCombo);
-          generate(i + 1, newCombo);
-        }
-      };
+    // Get the current hand that needs to be beaten
+    const currentHand =
+      handHistory.length > 0 ? handHistory[handHistory.length - 1] : null;
+    const currentHandType = currentHand?.handType;
 
-      generate(0, []);
-      return results;
-    };
+    // If we're starting a new hand, pick the lowest single card or suitable combination
+    if (startNewHand) {
+      // Find the lowest single card (usually 3 of spades)
+      const lowestCard = hand.length > 0 ? [hand[0]] : [];
 
-    const combinations = generateCombinations(hand);
-    const playableCombinations = combinations.filter((combination) =>
-      isCardPlayable(combination)
-    );
+      if (lowestCard.length > 0) {
+        setSelectedCards(lowestCard);
+        return;
+      }
 
-    if (playableCombinations.length > 0) {
-      const bestCombination = playableCombinations[0];
-      console.log("bestCombination", bestCombination);
-      setSelectedCards(bestCombination);
-    } else {
+      // If no cards left, pass
       passTurn();
+      return;
     }
-  }, [hand, isCardPlayable]);
+
+    // If we need to beat a specific hand
+    if (currentHand && currentHand.cards.length > 0) {
+      // Only generate combinations of the same type and length
+      const matchingCombinations = findMatchingCombinations(
+        hand,
+        currentHandType,
+        currentHand.cards.length
+      );
+
+      // Filter to only keep combinations that can beat the current hand
+      const playableCombinations = matchingCombinations.filter((combo) =>
+        isCardHigherWithType(
+          combo[combo.length - 1],
+          currentHand.cards[currentHand.cards.length - 1],
+          currentHandType
+        )
+      );
+
+      if (playableCombinations.length > 0) {
+        // Choose the lowest winning combination
+        const bestCombination = playableCombinations[0]; // Assuming hand is sorted
+        setSelectedCards(bestCombination);
+        return;
+      }
+    }
+
+    // If no playable combinations found, pass
+    passTurn();
+  }, [hand, handHistory, isCardPlayable]);
+
+  // Helper function to find combinations matching a specific type and length
+  const findMatchingCombinations = (
+    cards: CardType[],
+    handType: string,
+    length: number
+  ): CardType[][] => {
+    const results: CardType[][] = [];
+
+    // Group cards by rank for efficient combination generation
+    const cardsByRank: Record<string, CardType[]> = {};
+    cards.forEach((card) => {
+      if (!cardsByRank[card.rank]) cardsByRank[card.rank] = [];
+      cardsByRank[card.rank].push(card);
+    });
+
+    // Handle different hand types
+    switch (handType) {
+      case "Single":
+        // For singles, just return all cards
+        return cards.map((card) => [card]);
+
+      case "Pair":
+        // Find all pairs
+        Object.values(cardsByRank).forEach((sameRankCards) => {
+          if (sameRankCards.length >= 2) {
+            // Generate pairs from cards of the same rank
+            results.push(sameRankCards.slice(0, 2));
+          }
+        });
+        return results;
+
+      case "Triple":
+        // Find all triples
+        Object.values(cardsByRank).forEach((sameRankCards) => {
+          if (sameRankCards.length >= 3) {
+            results.push(sameRankCards.slice(0, 3));
+          }
+        });
+        return results;
+
+      // Add more cases as needed for other hand types
+
+      default:
+        return [];
+    }
+  };
 
   useEffect(() => {
     if (isCurrentPlayer && !isUserControlled) {

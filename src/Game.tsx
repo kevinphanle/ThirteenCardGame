@@ -54,7 +54,7 @@ const Game: React.FC = () => {
   return (
     <div className={classNames.board}>
       <div className="header">
-        <h1>Card Game</h1>
+        <h1>Thirteen</h1>
         <div className={classNames.btnContainer}>
           <button onClick={handleDeal}>Deal</button>
           <button onClick={handleReset}>Reset</button>
