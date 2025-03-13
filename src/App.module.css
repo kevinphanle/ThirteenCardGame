@@ -14,10 +14,10 @@
   justify-content: center;
   align-items: center;
   gap: 1rem;
-  background-color: #f8f9fa;
+  /* background-color: #f8f9fa; */
   padding: 1rem;
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
 }
 
 .startMessage {
@@ -97,7 +97,6 @@
   border: 1px solid #333;
   border-radius: 8px;
   text-align: center;
-  cursor: pointer;
   background-color: #fff;
   transition: transform 0.2s, box-shadow 0.2s;
   display: flex;
@@ -106,16 +105,6 @@
   align-items: center;
   padding: 1em 1.2em;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-  }
-
-  &:active {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  }
 
   p {
     margin: 0;
@@ -161,6 +150,26 @@
   span {
     backface-visibility: hidden;
   }
+}
+
+.clickable {
+  .card {
+    &:active {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+  }
+}
+
+.actionBtnContainer {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
 }
 
 .hidden {
@@ -583,21 +592,31 @@
 .player {
   width: 100%;
   box-sizing: border-box;
-  margin: 1rem 0;
-  padding: 1rem;
-  /* background-color: #f0f0f0; */
+  /* margin: 1rem 0; */
+  /* padding: 1rem; */
+  /* background-color:rgb(7, 7, 7); */
   border-radius: 8px;
   /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
   display: inline-block;
 }
 
+.cardContainer {
+  position: absolute;
+  transition: transform 0.2s;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.nonClickable {
+  cursor: default;
+}
+
 .active-player {
   background-color: #e0f7ff;
   border: 1px solid blue;
-}
-
-.passBtn {
-  margin-bottom: 1rem;
+  padding: 1rem;
 }
 
 .hand {
@@ -605,7 +624,7 @@
   flex-wrap: wrap;
   gap: 0.4rem; /* Reduced from 0.5rem */
   position: relative;
-  height: 150px;
+  height: 100px;
   min-width: 500px;
 }
 
@@ -615,16 +634,26 @@
   gap: 1rem;
   padding: 1rem;
   border-radius: 8px;
-  background-color: #f0f0f0;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   width: 100%;
   box-sizing: border-box;
   height: 300px;
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 12px;
+  color: white;
+  margin-bottom: 15px;
+  max-width: 600px;
+  overflow-y: auto;
 }
 
 .handHistoryContainer h3 {
   cursor: pointer;
   user-select: none;
+  margin: 0 0 10px 0;
+  font-size: 1.2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #ffd700;
 }
 
 .handHistoryContainer .entry {
@@ -633,72 +662,181 @@
   border-bottom: 1px solid #eee;
 }
 
-/* Add to your App.module.css */
-.gameTable {
+/* Current play styles */
+.currentPlay {
+  margin-bottom: 15px;
+  padding: 10px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+}
+
+.currentPlayInfo {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.handType {
+  font-weight: bold;
+  color: #ffd700;
+}
+
+.currentPlayCards {
+  display: flex;
+  justify-content: center;
+}
+
+.currentCardContainer {
+  transition: transform 0.2s;
+}
+
+.currentCardContainer:hover {
+  transform: translateY(-10px);
+  z-index: 10;
+}
+
+/* History timeline */
+.historyTimeline {
+  max-height: 250px;
+  padding-right: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  padding-top: 10px;
+}
+
+.historyEntry {
+  display: flex;
+  padding: 8px;
+  margin-bottom: 8px;
+  border-radius: 4px;
+  align-items: center;
+}
+
+.passEntry {
+  background-color: rgba(255, 0, 0, 0.2);
+}
+
+.playEntry {
+  background-color: rgba(0, 255, 0, 0.2);
+}
+
+.playerIndicator {
+  font-weight: bold;
+  margin-right: 10px;
+  padding: 3px 6px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  font-size: 0.8rem;
+  width: 80px;
+  text-align: center;
+}
+
+.passIndicator {
+  color: #ff6b6b;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.playDetails {
   display: flex;
   flex-direction: column;
-  /* height: 100vh; */
-  /* width: 100%; */
+  flex: 1;
+}
+
+.playType {
+  margin-bottom: 5px;
+  font-size: 0.8rem;
+}
+
+.historyCards {
+  display: flex;
+}
+
+.miniCardContainer {
+  transform: scale(0.7);
+  transform-origin: center left;
+}
+
+/* Grid-based game table layout */
+.gameTable {
+  display: grid;
+  grid-template-areas:
+    ".      top     ."
+    "left   center  right"
+    ".      bottom  .";
+  grid-template-columns: 200px 1fr 200px;
+  grid-template-rows: auto 1fr auto;
+  gap: 10px;
+  height: 90vh;
+  /* width: 90vw; */
+  /* max-width: 1200px; */
+  margin: 0 auto;
   padding: 20px;
   box-sizing: border-box;
 }
 
-.middleSection {
-  display: flex;
-  flex: 1;
-  flex-direction: row;
-  position: relative;
-}
-
-.topPlayer,
-.bottomPlayer {
-  /* height: 150px; */
-  width: 100%;
-  padding: 10px;
-  box-sizing: border-box;
-}
-
-.leftPlayer,
-.rightPlayer {
-  width: 200px;
-  height: 100%;
-  padding: 10px;
-  box-sizing: border-box;
-}
-
-.leftPlayer {
-  /* Rotate cards for left player */
-  transform: rotate(90deg);
-  transform-origin: top;
-}
-
-.rightPlayer {
-  /* Rotate cards for right player */
-  transform: rotate(-90deg);
-  transform-origin: top;
-}
-
+/* Position each player in their grid area */
 .topPlayer {
-  /* Rotate cards for top player */
+  grid-area: top;
+  justify-self: center;
   transform: rotate(180deg);
 }
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
+.leftPlayer {
+  grid-area: left;
+  justify-self: center;
+  align-self: center;
+  transform: rotate(90deg) translateX(-70px);
 }
 
+.rightPlayer {
+  grid-area: right;
+  justify-self: center;
+  align-self: center;
+  transform: rotate(-90deg) translateX(-70px);
+}
+
+.bottomPlayer {
+  grid-area: bottom;
+  justify-self: center;
+}
+
+/* Center play area in its grid area */
 .centerPlayArea {
-  flex: 1;
+  grid-area: center;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: #1a6127;
+  background-color: #1a6127; /* Green felt color */
   border-radius: 16px;
   padding: 20px;
-  margin: 20px;
   box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3);
+  position: relative;
+  border: 12px solid #8b4513; /* Brown wooden border */
+  min-height: 400px;
+}
+
+/* Remove the middleSection as it's no longer needed with grid */
+.middleSection {
+  display: contents;
+}
+
+/* Adjust player styles for grid layout */
+.topPlayer,
+.bottomPlayer,
+.leftPlayer,
+.rightPlayer {
+  padding: 15px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+}
+
+/* Adjust hand styles for side players */
+.leftPlayer .hand,
+.rightPlayer .hand {
+  min-width: 300px;
+  height: 120px;
 }

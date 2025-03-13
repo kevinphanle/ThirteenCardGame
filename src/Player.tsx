@@ -284,26 +284,35 @@ const Player: React.FC<PlayerProps> = ({
       }`}
     >
       {isUserControlled && <p>Your Hand</p>}
-      {selectedCards.length > 0 && isCurrentPlayer && (
-        <button onClick={playHand}>Play cards</button>
-      )}
 
       {handType && <p>Hand Type: {handType}</p>}
 
       {isUserControlled && <p>Possible Combinations: {possibleCombinations}</p>}
-      {isCurrentPlayer && handHistory.length > 0 && (
-        <button onClick={passTurn} className={classNames.passBtn}>
-          Pass
-        </button>
+
+      {isCurrentPlayer && isUserControlled && (
+        <div className={classNames.actionBtnContainer}>
+          {selectedCards.length > 0 && (
+            <button onClick={playHand}>Play cards</button>
+          )}
+          {handHistory.length > 0 && (
+            <button onClick={passTurn} className={classNames.passBtn}>
+              Pass
+            </button>
+          )}
+        </div>
       )}
 
       <div className={classNames.hand}>
         {hand.map((card, index) => (
           <div
             key={index}
-            className={classNames.cardContainer}
+            className={`${classNames.cardContainer} ${
+              isUserControlled ? classNames.clickable : classNames.nonClickable
+            }`}
             style={{ left: `${index * 30}px` }}
-            onClick={() => handleCardSelect(card)}
+            onClick={
+              isUserControlled ? () => handleCardSelect(card) : undefined
+            }
           >
             <Card
               card={card}

@@ -72,9 +72,93 @@ const PlayArea: React.FC<PlayAreaProps> = ({ playerHands, onPlayCards }) => {
           {handHistory.length > 0 && (
             <div className={classNames.handHistoryContainer}>
               <h3 onClick={() => setShowHistory(!showHistory)}>
-                Current Play {showHistory ? "▼" : "▶"}
+                Game History {showHistory ? "▼" : "▶"}
               </h3>
-              {/* ...hand history display code... */}
+
+              {/* Current play - always visible */}
+              <div className={classNames.currentPlay}>
+                {(() => {
+                  // Find the last non-pass entry
+                  const lastNonPassEntry = [...handHistory]
+                    .reverse()
+                    .find((entry) => entry.cards.length > 0);
+
+                  if (lastNonPassEntry) {
+                    return (
+                      <>
+                        <div className={classNames.currentPlayInfo}>
+                          <span className={classNames.handType}>
+                            {lastNonPassEntry.handType}
+                          </span>
+                        </div>
+                        <div className={classNames.currentPlayCards}>
+                          {lastNonPassEntry.cards.map((card, cardIndex) => (
+                            <div
+                              className={classNames.currentCardContainer}
+                              key={cardIndex}
+                              style={{
+                                marginLeft: cardIndex > 0 ? "-40px" : "0",
+                              }}
+                            >
+                              <Card card={{ ...card, hidden: false }} />
+                            </div>
+                          ))}
+                        </div>
+                      </>
+                    );
+                  }
+                  return (
+                    <span className={classNames.noPlay}>
+                      No cards played yet
+                    </span>
+                  );
+                })()}
+              </div>
+
+              {/* Expanded history */}
+              {showHistory && (
+                <div className={classNames.historyTimeline}>
+                  {handHistory.map((entry, index) => (
+                    <div
+                      key={index}
+                      className={`${classNames.historyEntry} ${
+                        entry.handType === "Pass"
+                          ? classNames.passEntry
+                          : classNames.playEntry
+                      }`}
+                    >
+                      <div className={classNames.playerIndicator}>
+                        Player {(index % 4) + 1}
+                      </div>
+                      {entry.handType === "Pass" ? (
+                        <div className={classNames.passIndicator}>PASS</div>
+                      ) : (
+                        <div className={classNames.playDetails}>
+                          <div className={classNames.playType}>
+                            {entry.handType}
+                          </div>
+                          <div className={classNames.historyCards}>
+                            {entry.cards.map((card, cardIndex) => (
+                              <div
+                                className={classNames.miniCardContainer}
+                                key={cardIndex}
+                                style={{
+                                  marginLeft: cardIndex > 0 ? "-25px" : "0",
+                                }}
+                              >
+                                <Card
+                                  key={cardIndex}
+                                  card={{ ...card, hidden: false }}
+                                />
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>
