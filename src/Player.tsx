@@ -188,7 +188,10 @@ const Player: React.FC<PlayerProps> = ({
 
   const isCardPlayable = (cards: CardType[]): boolean => {
     const selectedHandType = getHandType(cards);
-    const currentHand = handHistory[handHistory.length - 1];
+
+    const currentHand = [...handHistory]
+      .reverse()
+      .find((entry) => entry.cards.length > 0);
 
     // if no cards have been played yet, any hand is playable
     if (handHistory.length === 0 && selectedHandType) {
@@ -259,9 +262,11 @@ const Player: React.FC<PlayerProps> = ({
       handHistory.length === 0 ||
       handHistory.slice(-3).every((entry) => entry.cards.length === 0);
 
-    // Get the current hand that needs to be beaten
-    const currentHand =
-      handHistory.length > 0 ? handHistory[handHistory.length - 1] : null;
+    // Get the current hand that needs to be beaten (last non-pass hand)
+    const currentHand = [...handHistory]
+      .reverse()
+      .find((entry) => entry.cards.length > 0);
+
     const currentHandType = currentHand?.handType;
 
     // If we're starting a new hand, pick the lowest single card or suitable combination
