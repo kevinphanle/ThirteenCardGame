@@ -284,14 +284,13 @@ const Player: React.FC<PlayerProps> = ({
       }`}
     >
       {isUserControlled && <p>Your Hand</p>}
-      {!isUserControlled && <p>Player's Hand</p>}
       {selectedCards.length > 0 && isCurrentPlayer && (
         <button onClick={playHand}>Play cards</button>
       )}
 
       {handType && <p>Hand Type: {handType}</p>}
 
-      <p>Possible Combinations: {possibleCombinations}</p>
+      {isUserControlled && <p>Possible Combinations: {possibleCombinations}</p>}
       {isCurrentPlayer && handHistory.length > 0 && (
         <button onClick={passTurn} className={classNames.passBtn}>
           Pass

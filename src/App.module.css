@@ -585,9 +585,10 @@
   box-sizing: border-box;
   margin: 1rem 0;
   padding: 1rem;
-  background-color: #f0f0f0;
+  /* background-color: #f0f0f0; */
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
+  display: inline-block;
 }
 
 .active-player {
@@ -636,8 +637,8 @@
 .gameTable {
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  width: 100%;
+  /* height: 100vh; */
+  /* width: 100%; */
   padding: 20px;
   box-sizing: border-box;
 }
@@ -651,7 +652,7 @@
 
 .topPlayer,
 .bottomPlayer {
-  height: 150px;
+  /* height: 150px; */
   width: 100%;
   padding: 10px;
   box-sizing: border-box;
@@ -668,18 +669,25 @@
 .leftPlayer {
   /* Rotate cards for left player */
   transform: rotate(90deg);
-  transform-origin: center left;
+  transform-origin: top;
 }
 
 .rightPlayer {
   /* Rotate cards for right player */
   transform: rotate(-90deg);
-  transform-origin: center right;
+  transform-origin: top;
 }
 
 .topPlayer {
   /* Rotate cards for top player */
   transform: rotate(180deg);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
 .centerPlayArea {
