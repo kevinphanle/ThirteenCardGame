@@ -56,8 +56,20 @@ const Game: React.FC = () => {
       <div className="header">
         <h1>Thirteen</h1>
         <div className={classNames.btnContainer}>
-          <button onClick={handleDeal}>Deal</button>
-          <button onClick={handleReset}>Reset</button>
+          <button
+            onClick={handleDeal}
+            disabled={playerHands.length > 0}
+            className={playerHands.length > 0 ? classNames.disabledBtn : ""}
+          >
+            Deal
+          </button>
+          <button
+            onClick={handleReset}
+            disabled={playerHands.length === 0}
+            className={playerHands.length === 0 ? classNames.disabledBtn : ""}
+          >
+            Reset
+          </button>
         </div>
       </div>
 

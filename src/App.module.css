@@ -172,6 +172,11 @@
   margin-bottom: 2rem;
 }
 
+.disabledBtn {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .hidden {
   transform: rotateY(180deg);
 }
