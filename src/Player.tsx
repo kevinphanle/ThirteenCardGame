@@ -13,6 +13,7 @@ interface PlayerProps {
   isCurrentPlayer?: boolean;
   onPass: () => void;
   isUserControlled?: boolean;
+  playerIndex: number;
 }
 
 const rankOrder = [
@@ -39,6 +40,7 @@ const Player: React.FC<PlayerProps> = ({
   isCurrentPlayer,
   onPass,
   isUserControlled,
+  playerIndex,
 }) => {
   const [hand, setHand] = useState<CardType[]>(
     initialHand.map((card) => ({ ...card, hidden: !isUserControlled }))
@@ -362,52 +364,68 @@ const Player: React.FC<PlayerProps> = ({
 
   return (
     <div
-      className={`${isCurrentPlayer ? classNames["active-player"] : ""} ${
+      className={`${isCurrentPlayer ? classNames.activePlayer : ""} ${
         classNames.player
       }`}
     >
-      {isUserControlled && <p>Your Hand</p>}
+      {/* Player avatar - show for BOTH user and AI players */}
+      <div className={classNames.playerAvatar}>
+        <div
+          className={`${classNames.avatarIcon} ${
+            isCurrentPlayer ? classNames.currentPlayer : ""
+          }`}
+        >
+          {/* Show player number/icon */}
+          {isUserControlled ? "YOU" : "P" + playerIndex}
+        </div>
+        {!isUserControlled && (
+          <div className={classNames.cardCount}>
+            <div className={classNames.cardIcon}>
+              <span>{hand.length}</span>
+            </div>
+          </div>
+        )}
+        {isCurrentPlayer && !isUserControlled && (
+          <div className={classNames.playerStatus}>Thinking</div>
+        )}
+      </div>
+      {isUserControlled && (
+        // User's hand - show cards
+        <div className={classNames.userHandArea}>
+          <div className={classNames.hand}>
+            {hand.map((card, index) => (
+              <div
+                key={index}
+                className={`${classNames.cardContainer} ${
+                  isUserControlled
+                    ? classNames.clickable
+                    : classNames.nonClickable
+                }`}
+                style={{ left: `${index * 30}px` }}
+                onClick={
+                  isUserControlled ? () => handleCardSelect(card) : undefined
+                }
+              >
+                <Card
+                  card={card}
+                  selected={selectedCards.some(
+                    (selectedCard) =>
+                      selectedCard.rank === card.rank &&
+                      selectedCard.suit === card.suit
+                  )}
+                />
+              </div>
+            ))}
+          </div>
+          <div className={classNames.actionBtnContainer}>
+            <button onClick={passTurn}>Pass</button>
 
-      {handType && <p>Hand Type: {handType}</p>}
-
-      {isUserControlled && <p>Possible Combinations: {possibleCombinations}</p>}
-
-      {isCurrentPlayer && isUserControlled && (
-        <div className={classNames.actionBtnContainer}>
-          {selectedCards.length > 0 && (
-            <button onClick={playHand}>Play cards</button>
-          )}
-          {handHistory.length > 0 && (
-            <button onClick={passTurn} className={classNames.passBtn}>
-              Pass
-            </button>
-          )}
+            {selectedCards.length > 0 && isCurrentPlayer && (
+              <button onClick={playHand}>Play Cards</button>
+            )}
+          </div>
         </div>
       )}
-
-      <div className={classNames.hand}>
-        {hand.map((card, index) => (
-          <div
-            key={index}
-            className={`${classNames.cardContainer} ${
-              isUserControlled ? classNames.clickable : classNames.nonClickable
-            }`}
-            style={{ left: `${index * 30}px` }}
-            onClick={
-              isUserControlled ? () => handleCardSelect(card) : undefined
-            }
-          >
-            <Card
-              card={card}
-              selected={selectedCards.some(
-                (selectedCard) =>
-                  selectedCard.rank === card.rank &&
-                  selectedCard.suit === card.suit
-              )}
-            />
-          </div>
-        ))}
-      </div>
     </div>
   );
 };

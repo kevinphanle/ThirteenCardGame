@@ -53,7 +53,7 @@ const Game: React.FC = () => {
 
   return (
     <div className={classNames.board}>
-      <div className="header">
+      <div className={classNames.header}>
         <h1>Thirteen</h1>
         <div className={classNames.btnContainer}>
           <button
@@ -73,12 +73,8 @@ const Game: React.FC = () => {
         </div>
       </div>
 
-      {playerHands.length > 0 ? (
+      {playerHands.length > 0 && (
         <PlayArea playerHands={playerHands} onPlayCards={handlePlayCards} />
-      ) : (
-        <div className={classNames.startMessage}>
-          <p>Click "Deal" to start the game</p>
-        </div>
       )}
     </div>
   );

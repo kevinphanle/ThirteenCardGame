@@ -45,42 +45,42 @@ const PlayArea: React.FC<PlayAreaProps> = ({ playerHands, onPlayCards }) => {
           initialHand={playerHands[2] || []}
           onPlayCards={handlePlayCards}
           isCurrentPlayer={currentPlayer === 2}
+          playerIndex={2}
           onPass={handlePass}
           isUserControlled={false}
         />
       </div>
 
-      <div className={classNames.middleSection}>
-        {/* Left player (player 3) */}
-        <div className={classNames.leftPlayer}>
-          <Player
-            initialHand={playerHands[3] || []}
-            onPlayCards={handlePlayCards}
-            isCurrentPlayer={currentPlayer === 3}
-            onPass={handlePass}
-            isUserControlled={false}
-          />
-        </div>
+      {/* Left player (player 3) */}
+      <div className={classNames.leftPlayer}>
+        <Player
+          initialHand={playerHands[3] || []}
+          onPlayCards={handlePlayCards}
+          isCurrentPlayer={currentPlayer === 3}
+          playerIndex={3}
+          onPass={handlePass}
+          isUserControlled={false}
+        />
+      </div>
 
-        {/* Center play area */}
-        <div className={classNames.centerPlayArea}>
-          {/* Use the new HandHistory component */}
-          <HandHistory
-            handHistory={handHistory}
-            currentHandType={currentHandType}
-          />
-        </div>
+      {/* Center play area */}
+      <div className={classNames.centerPlayArea}>
+        <HandHistory
+          handHistory={handHistory}
+          currentHandType={currentHandType}
+        />
+      </div>
 
-        {/* Right player (player 1) */}
-        <div className={classNames.rightPlayer}>
-          <Player
-            initialHand={playerHands[1] || []}
-            onPlayCards={handlePlayCards}
-            isCurrentPlayer={currentPlayer === 1}
-            onPass={handlePass}
-            isUserControlled={false}
-          />
-        </div>
+      {/* Right player (player 1) */}
+      <div className={classNames.rightPlayer}>
+        <Player
+          initialHand={playerHands[1] || []}
+          onPlayCards={handlePlayCards}
+          isCurrentPlayer={currentPlayer === 1}
+          playerIndex={1}
+          onPass={handlePass}
+          isUserControlled={false}
+        />
       </div>
 
       {/* Bottom player (user - player 0) */}
@@ -89,6 +89,7 @@ const PlayArea: React.FC<PlayAreaProps> = ({ playerHands, onPlayCards }) => {
           initialHand={playerHands[0] || []}
           onPlayCards={handlePlayCards}
           isCurrentPlayer={currentPlayer === 0}
+          playerIndex={0}
           onPass={handlePass}
           isUserControlled={true}
         />

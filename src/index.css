@@ -11,16 +11,14 @@
   width: 100%;
 }
 
-
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
+  /* display: flex; */
+  /* place-items: center; */
   justify-content: center;
   min-width: 320px;
   min-height: 100vh;
 }
-
 
 button {
   border-radius: 8px;
