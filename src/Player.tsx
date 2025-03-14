@@ -368,8 +368,49 @@ const Player: React.FC<PlayerProps> = ({
         classNames.player
       }`}
     >
+      {isUserControlled && (
+        <div className={classNames.userHandArea}>
+          <div className={classNames.hand}>
+            {hand.map((card, index) => {
+              // Calculate fan position and rotation
+              const totalCards = hand.length;
+              const fanAngle = 60; // Total angle of the fan in degrees
+              const anglePerCard = fanAngle / Math.max(totalCards - 1, 1);
+              const currentAngle = -fanAngle / 2 + anglePerCard * index;
+              const isSelectedCard = selectedCards.some(
+                (selectedCard) =>
+                  selectedCard.rank === card.rank &&
+                  selectedCard.suit === card.suit
+              );
+
+              return (
+                <div
+                  key={index}
+                  className={`${classNames.cardContainer} ${classNames.clickable}`}
+                  style={{
+                    transform: `translateY(${
+                      isSelectedCard ? -30 : 0
+                    }px) rotate(${currentAngle}deg)`,
+                    zIndex: isSelectedCard ? 100 : index,
+                    left: `calc(50% - ${totalCards * 10}px + ${index * 20}px)`,
+                  }}
+                  onClick={() => handleCardSelect(card)}
+                >
+                  <Card card={card} selected={isSelectedCard} />
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* Player avatar - show for BOTH user and AI players */}
-      <div className={classNames.playerAvatar}>
+      <div
+        className={`${classNames.playerAvatar} ${
+          isUserControlled ? classNames.userAvatar : ""
+        }`}
+      >
+        {isUserControlled && <button onClick={passTurn}>Pass</button>}
         <div
           className={`${classNames.avatarIcon} ${
             isCurrentPlayer ? classNames.currentPlayer : ""
@@ -378,6 +419,16 @@ const Player: React.FC<PlayerProps> = ({
           {/* Show player number/icon */}
           {isUserControlled ? "YOU" : "P" + playerIndex}
         </div>
+
+        {isUserControlled && (
+          <button
+            disabled={!isCurrentPlayer || selectedCards.length == 0}
+            onClick={playHand}
+          >
+            Play
+          </button>
+        )}
+
         {!isUserControlled && (
           <div className={classNames.cardCount}>
             <div className={classNames.cardIcon}>
@@ -385,47 +436,11 @@ const Player: React.FC<PlayerProps> = ({
             </div>
           </div>
         )}
+
         {isCurrentPlayer && !isUserControlled && (
           <div className={classNames.playerStatus}>Thinking</div>
         )}
       </div>
-      {isUserControlled && (
-        // User's hand - show cards
-        <div className={classNames.userHandArea}>
-          <div className={classNames.hand}>
-            {hand.map((card, index) => (
-              <div
-                key={index}
-                className={`${classNames.cardContainer} ${
-                  isUserControlled
-                    ? classNames.clickable
-                    : classNames.nonClickable
-                }`}
-                style={{ left: `${index * 30}px` }}
-                onClick={
-                  isUserControlled ? () => handleCardSelect(card) : undefined
-                }
-              >
-                <Card
-                  card={card}
-                  selected={selectedCards.some(
-                    (selectedCard) =>
-                      selectedCard.rank === card.rank &&
-                      selectedCard.suit === card.suit
-                  )}
-                />
-              </div>
-            ))}
-          </div>
-          <div className={classNames.actionBtnContainer}>
-            <button onClick={passTurn}>Pass</button>
-
-            {selectedCards.length > 0 && isCurrentPlayer && (
-              <button onClick={playHand}>Play Cards</button>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   );
 };

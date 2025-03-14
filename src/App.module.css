@@ -160,9 +160,60 @@
 }
 
 .actionBtnContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  top: 60px;
+  width: 300px;
+  transform: translateX(-50%);
+  z-index: 50;
+  margin-top: 20px;
+}
+
+.userAvatar button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s;
+  font-size: 16px;
+  min-width: 130px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(to bottom, #0f6335, #0a4a28);
+  border-bottom: 3px solid #083b20;
+  color: white;
+}
+
+.userAvatar button:hover:not(:disabled) {
+  background-color: #14894a;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.userAvatar button:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Special styling for pass button */
+.userAvatar button:first-child {
+  background: linear-gradient(to bottom, #a33, #822);
+  border-bottom: 3px solid #611;
+}
+
+.userAvatar button:first-child:hover:not(:disabled) {
+  background-color: #c44;
+}
+
+/* Conditional Play Cards button styling */
+.userAvatar button:last-child {
+  background-color: #0f6335;
+}
+
+.userAvatar button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .disabledBtn {
@@ -788,11 +839,6 @@
 /* Casino-style poker table with static size */
 .gameTable {
   padding: 5rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
   width: 1000px; /* Fixed width instead of 90% */
   margin: 0 auto;
   box-sizing: border-box;
@@ -800,12 +846,15 @@
   border-radius: 15px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
   position: relative;
+  display: flex;
+  justify-content: center;
+  flex-grow: 1;
 }
 
 /* Position each player in their grid area */
 .topPlayer {
   position: absolute;
-  top: 10px;
+  top: -80px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 10;
@@ -813,7 +862,7 @@
 
 .leftPlayer {
   position: absolute;
-  left: 95px;
+  left: -80px;
   top: 50%;
   transform: translateY(-50%);
   z-index: 10;
@@ -821,7 +870,7 @@
 
 .rightPlayer {
   position: absolute;
-  right: 95px;
+  right: -80px;
   top: 50%;
   transform: translateY(-50%);
   z-index: 10;
@@ -829,18 +878,46 @@
 
 .bottomPlayer {
   position: absolute;
-  bottom: -30px;
+  bottom: -180px; /* Reduced from -180px to be closer to the table */
   left: 50%;
   transform: translateX(-50%);
-  /* width: 600px; */
   z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Ensure everything is centered */
+  width: 600px;
 }
+
+.bottomPlayer .hand {
+  display: flex;
+  position: relative;
+  height: 130px; /* Increased height for better fan visibility */
+  width: 540px;
+  transform-style: preserve-3d;
+  justify-content: center;
+  align-items: flex-end; /* Align from bottom for fan effect */
+  margin: 0 auto; /* Center in container */
+}
+
+.bottomPlayer .cardContainer {
+  position: absolute;
+  transition: all 0.3s ease;
+  transform-origin: bottom center;
+  will-change: transform;
+  /* Base style that will be overridden inline */
+}
+
+.bottomPlayer .selected {
+  transform: translateY(-30px) !important;
+  z-index: 100 !important;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3) !important;
+}
+
 /* Casino-style felt table surface */
 .centerPlayArea {
-  grid-area: center;
-  background-color: #0f6335; /* Darker green felt from image */
-  border-radius: 180px / 120px; /* More oval shape like in the image */
-  border: 18px solid #472205; /* Dark wood trim like in image */
+  background-color: #0f6335;
+  border-radius: 180px / 120px;
+  border: 18px solid #472205;
   box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 0, 0, 0.4);
   padding: 30px;
   position: relative;
@@ -848,8 +925,8 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 400px; /* Fixed height for the table */
-  width: 600px; /* Fixed max width for the table */
+  height: 400px;
+  width: 600px;
 }
 
 /* Table rail based on image */
@@ -906,6 +983,7 @@
   border-right: 3px solid #0f6335;
   color: white;
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+  min-height: 100vh;
 }
 
 .header h1 {
@@ -920,7 +998,6 @@
   display: flex;
   flex-direction: column;
   gap: 15px;
-  width: 80%;
 }
 
 .btnContainer button {
@@ -945,11 +1022,13 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   position: relative; /* For absolute positioning of thought bubble */
+}
+
+.userAvatar {
+  flex-direction: row;
+  gap: 1rem;
+  margin-top: 1rem;
 }
 
 .avatarIcon {
@@ -1018,11 +1097,11 @@
 
 .userHandArea {
   display: flex;
-  gap: 0.5rem;
-
-  button {
-    height: 100%;
-  }
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  position: relative;
+  /* padding-bottom: 70px; */
 }
 
 /* Thought bubble styles */
