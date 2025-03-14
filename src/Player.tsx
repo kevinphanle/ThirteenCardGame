@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Card as CardType } from "./types";
 import classNames from "./App.module.css";
 import Card from "./Card";
@@ -46,7 +46,7 @@ const Player: React.FC<PlayerProps> = ({
     initialHand.map((card) => ({ ...card, hidden: !isUserControlled }))
   );
   const [selectedCards, setSelectedCards] = useState<CardType[]>([]);
-  const [handType, setHandType] = useState<string | null>(null);
+  // const [handType, setHandType] = useState<string | null>(null);
   const { setCurrentHandType, handHistory, setHandHistory } = useGameContext();
 
   useEffect(() => {
@@ -72,70 +72,46 @@ const Player: React.FC<PlayerProps> = ({
 
     setSelectedCards(newSelectedCards);
 
-    setHandType(getHandType(newSelectedCards));
+    // setHandType(getHandType(newSelectedCards));
   };
 
-  const checkForPossiblePairs = (cards: CardType[]): boolean => {
-    const rankCounts: { [key: string]: number } = {};
-    cards.forEach((card) => {
-      rankCounts[card.rank] = (rankCounts[card.rank] || 0) + 1;
-    });
+  // const checkForPossiblePairs = (cards: CardType[]): boolean => {
+  //   const rankCounts: { [key: string]: number } = {};
+  //   cards.forEach((card) => {
+  //     rankCounts[card.rank] = (rankCounts[card.rank] || 0) + 1;
+  //   });
 
-    return Object.values(rankCounts).some((count) => count >= 2);
-  };
+  //   return Object.values(rankCounts).some((count) => count >= 2);
+  // };
 
-  const checkForPossibleTriples = (cards: CardType[]): boolean => {
-    const rankCounts: { [key: string]: number } = {};
-    cards.forEach((card) => {
-      rankCounts[card.rank] = (rankCounts[card.rank] || 0) + 1;
-    });
+  // const checkForPossibleTriples = (cards: CardType[]): boolean => {
+  //   const rankCounts: { [key: string]: number } = {};
+  //   cards.forEach((card) => {
+  //     rankCounts[card.rank] = (rankCounts[card.rank] || 0) + 1;
+  //   });
 
-    return Object.values(rankCounts).some((count) => count >= 3);
-  };
+  //   return Object.values(rankCounts).some((count) => count >= 3);
+  // };
 
-  const checkForPossibleStraights = (cards: CardType[]): boolean => {
-    const sortedRanks = cards
-      .map((card) => rankOrder.indexOf(card.rank))
-      .sort((a, b) => a - b);
+  // const checkForPossibleStraights = (cards: CardType[]): boolean => {
+  //   const sortedRanks = cards
+  //     .map((card) => rankOrder.indexOf(card.rank))
+  //     .sort((a, b) => a - b);
 
-    let consecutiveCount = 1;
+  //   let consecutiveCount = 1;
 
-    for (let i = 0; i < sortedRanks.length - 1; i++) {
-      if (sortedRanks[i] + 1 === sortedRanks[i + 1]) {
-        consecutiveCount++;
-        if (consecutiveCount >= 3) {
-          return true;
-        }
-      } else {
-        consecutiveCount = 1;
-      }
-    }
-    return false;
-  };
-
-  const checkForPossibleCombinations = (cards: CardType[]): string[] => {
-    const possibleCombinations: string[] = [];
-
-    if (checkForPossiblePairs(cards)) {
-      possibleCombinations.push("Pair");
-    }
-    if (checkForPossibleTriples(cards)) {
-      possibleCombinations.push("Triple");
-    }
-    // if (cards.length >= 4) {
-    //   possibleCombinations.push("Quadruple");
-    // }
-    if (checkForPossibleStraights(cards)) {
-      possibleCombinations.push("Straight");
-    }
-
-    return possibleCombinations;
-  };
-
-  const possibleCombinations = useMemo(
-    () => checkForPossibleCombinations(hand),
-    [hand]
-  );
+  //   for (let i = 0; i < sortedRanks.length - 1; i++) {
+  //     if (sortedRanks[i] + 1 === sortedRanks[i + 1]) {
+  //       consecutiveCount++;
+  //       if (consecutiveCount >= 3) {
+  //         return true;
+  //       }
+  //     } else {
+  //       consecutiveCount = 1;
+  //     }
+  //   }
+  //   return false;
+  // };
 
   const isCardHigherWithType = (
     card: CardType,
@@ -229,7 +205,7 @@ const Player: React.FC<PlayerProps> = ({
 
   const passTurn = () => {
     setSelectedCards([]);
-    setHandType(null);
+    // setHandType(null);
     onPass();
   };
 
@@ -266,8 +242,7 @@ const Player: React.FC<PlayerProps> = ({
       // Only generate combinations of the same type and length
       const matchingCombinations = findMatchingCombinations(
         hand,
-        currentHandType,
-        currentHand.cards.length
+        currentHandType || ""
       );
 
       // Filter to only keep combinations that can beat the current hand
@@ -275,7 +250,7 @@ const Player: React.FC<PlayerProps> = ({
         isCardHigherWithType(
           combo[combo.length - 1],
           currentHand.cards[currentHand.cards.length - 1],
-          currentHandType
+          currentHandType || ""
         )
       );
 
@@ -294,8 +269,7 @@ const Player: React.FC<PlayerProps> = ({
   // Helper function to find combinations matching a specific type and length
   const findMatchingCombinations = (
     cards: CardType[],
-    handType: string,
-    length: number
+    handType: string
   ): CardType[][] => {
     const results: CardType[][] = [];
 

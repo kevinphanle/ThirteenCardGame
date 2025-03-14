@@ -5,16 +5,13 @@ import classNames from "./App.module.css";
 
 interface HandHistoryProps {
   handHistory: Array<{
-    handType: string;
+    handType: string | null;
     cards: CardType[];
   }>;
   currentHandType: string | null;
 }
 
-const HandHistory: React.FC<HandHistoryProps> = ({
-  handHistory,
-  currentHandType,
-}) => {
+const HandHistory: React.FC<HandHistoryProps> = ({ handHistory }) => {
   const [showHistory, setShowHistory] = useState(false);
 
   if (handHistory.length === 0) {

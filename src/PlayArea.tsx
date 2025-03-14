@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import { Card as CardType } from "./types";
 import Player from "./Player";
 import classNames from "./App.module.css";
 import { useGameContext } from "./GameContext";
 import { getHandType } from "./HandTypeUtils";
-import Card from "./Card";
 import HandHistory from "./HandHistory";
 
 interface PlayAreaProps {
@@ -13,9 +12,7 @@ interface PlayAreaProps {
 }
 
 const PlayArea: React.FC<PlayAreaProps> = ({ playerHands, onPlayCards }) => {
-  const [showHistory, setShowHistory] = useState(false);
   const {
-    playedCards,
     currentHandType,
     setCurrentHandType,
     handHistory,
