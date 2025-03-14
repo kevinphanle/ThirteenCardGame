@@ -1,0 +1,504 @@
+@import "./variables.module.css";
+
+/* Card container */
+.cardContainer {
+  position: absolute;
+  transition: transform 0.2s;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.nonClickable {
+  cursor: default;
+}
+
+.card {
+  --width: var(--card-width);
+  --height: var(--card-height);
+  width: var(--width);
+  height: var(--height);
+  position: relative;
+  border: 1px solid #333;
+  border-radius: var(--border-radius-md);
+  text-align: center;
+  background-color: #fff;
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1em 1.2em;
+  box-shadow: var(--shadow-sm);
+}
+
+.card p {
+  margin: 0;
+}
+
+.card .number {
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin-bottom: -0.35rem;
+}
+
+.card .suit {
+  font-size: 1rem;
+}
+
+/* Selected card state */
+.selected {
+  border: 2px solid #007bff;
+  background-color: #e0f7ff;
+  transform: translateY(-20px);
+}
+
+/* Card positioning */
+.card .topLeft,
+.card .bottomRight {
+  position: absolute;
+  font-size: 0.7em;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  letter-spacing: -0.1em;
+}
+
+.card .topLeft .suit,
+.card .bottomRight .suit {
+  width: 8px;
+  height: 8px;
+}
+
+.card .topLeft {
+  top: 0;
+  left: 0.3rem;
+}
+
+.card .bottomRight {
+  bottom: 0;
+  right: 0.3rem;
+  transform: rotate(180deg);
+}
+
+/* Hidden card back */
+.hidden {
+  transform: rotateY(180deg);
+  padding: 0.5em;
+}
+
+.cardBack {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #1a6127;
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+  position: relative;
+}
+
+.cardBackPattern {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0.1) 10px,
+    rgba(255, 255, 255, 0.2) 10px,
+    rgba(255, 255, 255, 0.2) 20px
+  );
+}
+
+/* Card center area and suit layout */
+.centerArea {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+  border-radius: var(--border-radius-md);
+}
+
+.suitArea {
+  width: 100%;
+  display: grid;
+  justify-items: center;
+  align-items: center;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  position: relative;
+}
+
+.suitArea .suit {
+  font-size: 1.5rem;
+  grid-row-end: span 2;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+
+/* Card suit images */
+.Hearts {
+  background-image: url("icons/heart.svg");
+}
+.Diamonds {
+  background-image: url("icons/diamond.svg");
+}
+.Spades {
+  background-image: url("icons/spade.svg");
+}
+.Clubs {
+  background-image: url("icons/club.svg");
+}
+
+.Hearts.king,
+.Diamonds.king {
+  background-image: url("icons/king-red.svg") !important;
+}
+.Spades.king,
+.Clubs.king {
+  background-image: url("icons/king-black.svg") !important;
+}
+.Hearts.queen,
+.Diamonds.queen {
+  background-image: url("icons/queen-red.svg") !important;
+}
+.Spades.queen,
+.Clubs.queen {
+  background-image: url("icons/queen-black.svg") !important;
+}
+.Hearts.jack,
+.Diamonds.jack {
+  background-image: url("icons/jack-red.svg") !important;
+}
+.Spades.jack,
+.Clubs.jack {
+  background-image: url("icons/jack-black.svg") !important;
+}
+
+/* Card layouts for different ranks */
+.ace .suit,
+.jack .suit,
+.queen .suit,
+.king .suit {
+  grid-row-start: 2;
+  grid-column-start: 1;
+  grid-row-end: span 6;
+  grid-column-end: span 3;
+}
+
+.two .suit {
+  &:first-child {
+    grid-row-start: 1;
+    grid-column-start: 2;
+  }
+
+  &:nth-child(2) {
+    grid-row-start: 7;
+    grid-column-start: 2;
+    transform: rotate(180deg);
+  }
+}
+
+.three .suit {
+  &:first-child {
+    grid-row-start: 1;
+    grid-column-start: 2;
+  }
+
+  &:nth-child(2) {
+    grid-row-start: 4;
+    grid-column-start: 2;
+  }
+
+  &:nth-child(3) {
+    grid-row-start: 7;
+    grid-column-start: 2;
+    transform: rotate(180deg);
+  }
+}
+
+.four .suit {
+  &:first-child {
+    grid-row-start: 1;
+    grid-column-start: 1;
+  }
+
+  &:nth-child(2) {
+    grid-row-start: 1;
+    grid-column-start: 3;
+  }
+
+  &:nth-child(3) {
+    grid-row-start: 7;
+    grid-column-start: 1;
+  }
+
+  &:nth-child(4) {
+    grid-row-start: 7;
+    grid-column-start: 3;
+  }
+}
+
+.five .suit {
+  &:first-child {
+    grid-row-start: 1;
+    grid-column-start: 1;
+  }
+
+  &:nth-child(2) {
+    grid-row-start: 1;
+    grid-column-start: 3;
+  }
+
+  &:nth-child(3) {
+    grid-row-start: 7;
+    grid-column-start: 1;
+    transform: rotate(180deg);
+  }
+
+  &:nth-child(4) {
+    grid-row-start: 7;
+    grid-column-start: 3;
+    transform: rotate(180deg);
+  }
+
+  &:nth-child(5) {
+    grid-row-start: 4;
+    grid-column-start: 2;
+  }
+}
+
+.six .suit {
+  &:first-child {
+    grid-row-start: 1;
+    grid-column-start: 1;
+  }
+
+  &:nth-child(2) {
+    grid-row-start: 1;
+    grid-column-start: 3;
+  }
+
+  &:nth-child(3) {
+    grid-row-start: 7;
+    grid-column-start: 1;
+    transform: rotate(180deg);
+  }
+
+  &:nth-child(4) {
+    grid-row-start: 7;
+    grid-column-start: 3;
+    transform: rotate(180deg);
+  }
+
+  &:nth-child(5) {
+    grid-row-start: 4;
+    grid-column-start: 1;
+  }
+
+  &:nth-child(6) {
+    grid-row-start: 4;
+    grid-column-start: 3;
+  }
+}
+
+.seven .suit {
+  &:first-child {
+    grid-row-start: 1;
+    grid-column-start: 1;
+  }
+
+  &:nth-child(2) {
+    grid-row-start: 1;
+    grid-column-start: 3;
+  }
+
+  &:nth-child(3) {
+    grid-row-start: 7;
+    grid-column-start: 1;
+    transform: rotate(180deg);
+  }
+
+  &:nth-child(4) {
+    grid-row-start: 7;
+    grid-column-start: 3;
+    transform: rotate(180deg);
+  }
+
+  &:nth-child(5) {
+    grid-row-start: 4;
+    grid-column-start: 1;
+  }
+
+  &:nth-child(6) {
+    grid-row-start: 4;
+    grid-column-start: 3;
+  }
+
+  &:nth-child(7) {
+    grid-row-start: 2;
+    grid-column-start: 2;
+  }
+}
+
+.eight .suit {
+  &:first-child {
+    grid-row-start: 1;
+    grid-column-start: 1;
+  }
+
+  &:nth-child(2) {
+    grid-row-start: 1;
+    grid-column-start: 3;
+  }
+
+  &:nth-child(3) {
+    grid-row-start: 7;
+    grid-column-start: 1;
+    transform: rotate(180deg);
+  }
+
+  &:nth-child(4) {
+    grid-row-start: 7;
+    grid-column-start: 3;
+    transform: rotate(180deg);
+  }
+
+  &:nth-child(5) {
+    grid-row-start: 4;
+    grid-column-start: 1;
+  }
+
+  &:nth-child(6) {
+    grid-row-start: 4;
+    grid-column-start: 3;
+  }
+
+  &:nth-child(7) {
+    grid-row-start: 2;
+    grid-column-start: 2;
+  }
+
+  &:nth-child(8) {
+    grid-row-start: 6;
+    grid-column-start: 2;
+    transform: rotate(180deg);
+  }
+}
+
+.nine .suit {
+  &:first-child {
+    grid-row-start: 1;
+    grid-column-start: 1;
+  }
+
+  &:nth-child(2) {
+    grid-row-start: 3;
+    grid-column-start: 1;
+  }
+
+  &:nth-child(3) {
+    grid-row-start: 5;
+    grid-column-start: 1;
+    transform: rotate(180deg);
+  }
+
+  &:nth-child(4) {
+    grid-row-start: 7;
+    grid-column-start: 1;
+    transform: rotate(180deg);
+  }
+
+  &:nth-child(5) {
+    grid-row-start: 1;
+    grid-column-start: 3;
+  }
+
+  &:nth-child(6) {
+    grid-row-start: 3;
+    grid-column-start: 3;
+  }
+
+  &:nth-child(7) {
+    grid-row-start: 5;
+    grid-column-start: 3;
+    transform: rotate(180deg);
+  }
+
+  &:nth-child(8) {
+    grid-row-start: 7;
+    grid-column-start: 3;
+    transform: rotate(180deg);
+  }
+
+  &:nth-child(9) {
+    grid-row-start: 4;
+    grid-column-start: 2;
+  }
+}
+
+.ten .suit {
+  &:first-child {
+    grid-row-start: 1;
+    grid-column-start: 1;
+  }
+
+  &:nth-child(2) {
+    grid-row-start: 3;
+    grid-column-start: 1;
+  }
+
+  &:nth-child(3) {
+    grid-row-start: 5;
+    grid-column-start: 1;
+    transform: rotate(180deg);
+  }
+
+  &:nth-child(4) {
+    grid-row-start: 7;
+    grid-column-start: 1;
+    transform: rotate(180deg);
+  }
+
+  &:nth-child(5) {
+    grid-row-start: 1;
+    grid-column-start: 3;
+  }
+
+  &:nth-child(6) {
+    grid-row-start: 3;
+    grid-column-start: 3;
+  }
+
+  &:nth-child(7) {
+    grid-row-start: 5;
+    grid-column-start: 3;
+    transform: rotate(180deg);
+  }
+
+  &:nth-child(8) {
+    grid-row-start: 7;
+    grid-column-start: 3;
+    transform: rotate(180deg);
+  }
+
+  &:nth-child(9) {
+    grid-row-start: 2;
+    grid-column-start: 2;
+  }
+
+  &:nth-child(10) {
+    grid-row-start: 6;
+    grid-column-start: 2;
+    transform: rotate(180deg);
+  }
+}

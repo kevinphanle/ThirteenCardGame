@@ -1,0 +1,45 @@
+@import "./variables.module.css";
+
+.board {
+  display: flex;
+  background-color: var(--color-bg-dark);
+}
+
+.gameTable {
+  padding: 5rem;
+  width: 1000px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  background-color: var(--color-bg-medium);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  display: flex;
+  justify-content: center;
+  flex-grow: 1;
+}
+
+.startMessage {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.5rem;
+  color: #555;
+}
+
+/* Header/sidebar styling */
+.header {
+  padding: 20px;
+  background-color: var(--color-bg-medium);
+  border-right: 3px solid var(--color-primary);
+  color: white;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+  min-height: 100vh;
+}
+
+.header h1 {
+  color: white;
+  margin-top: 20px;
+  font-size: 2rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}

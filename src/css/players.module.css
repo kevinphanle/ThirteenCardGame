@@ -1,0 +1,202 @@
+@import "./variables.module.css";
+
+.player {
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: var(--border-radius-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Player positioning */
+.topPlayer {
+  position: absolute;
+  top: -80px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+
+.leftPlayer {
+  position: absolute;
+  left: -80px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+}
+
+.rightPlayer {
+  position: absolute;
+  right: -80px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+}
+
+.bottomPlayer {
+  position: absolute;
+  bottom: -120px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 600px;
+}
+
+/* Hand styling */
+.hand {
+  display: flex;
+  gap: 0.4rem;
+  position: relative;
+  height: 112.4px;
+  min-width: 456px;
+}
+
+.bottomPlayer .hand {
+  position: relative;
+  height: 130px;
+  width: 540px;
+  transform-style: preserve-3d;
+  justify-content: center;
+  align-items: flex-end;
+  margin: 0 auto;
+}
+
+.bottomPlayer .cardContainer {
+  position: absolute;
+  transition: all 0.3s ease;
+  transform-origin: bottom center;
+  will-change: transform;
+}
+
+.bottomPlayer .selected {
+  transform: translateY(-30px) !important;
+  z-index: 100 !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+.leftPlayer .hand,
+.rightPlayer .hand {
+  min-width: 300px;
+  height: 120px;
+}
+
+.userHandArea {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  position: relative;
+}
+
+/* Player avatar styling */
+.playerAvatar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.userAvatar {
+  flex-direction: row;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.avatarIcon {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background-color: var(--color-secondary);
+  border: 3px solid var(--color-gold);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-weight: bold;
+  font-size: 24px;
+  margin-bottom: 10px;
+  box-shadow: var(--shadow-md);
+}
+
+.playerAvatar .avatarIcon:has(:contains("YOU")) {
+  background-color: var(--color-gold);
+  color: var(--color-secondary);
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.cardCount {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  border-radius: var(--border-radius-sm);
+  font-size: 14px;
+  position: absolute;
+  bottom: 10px;
+}
+
+.cardCount .cardIcon {
+  background-color: white;
+  border-radius: 3px;
+  padding: 0.3em;
+}
+
+.cardCount .cardIcon span {
+  color: black;
+  font-weight: bold;
+}
+
+.currentPlayer {
+  border-color: var(--color-highlight);
+  animation: pulse 1.5s infinite;
+}
+
+/* Player status/thinking bubble */
+.playerStatus {
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: white;
+  color: #333;
+  padding: 8px 12px;
+  border-radius: 15px;
+  font-size: 14px;
+  font-weight: bold;
+  max-width: 100px;
+  text-align: center;
+  animation: pulsate 1.5s infinite;
+  box-shadow: var(--shadow-sm);
+}
+
+.playerStatus:before {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 20px;
+  background-color: white;
+  border-radius: 50%;
+  box-shadow: var(--shadow-sm);
+}
+
+.playerStatus:after {
+  content: "";
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 10px;
+  height: 10px;
+  background-color: white;
+  border-radius: 50%;
+  box-shadow: var(--shadow-sm);
+}

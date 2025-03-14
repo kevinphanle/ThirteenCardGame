@@ -1,0 +1,118 @@
+@import "./variables.module.css";
+
+.handHistoryContainer {
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: var(--border-radius-md);
+  padding: 15px;
+  color: white;
+  max-width: 90%;
+  backdrop-filter: blur(3px);
+  max-height: 300px;
+  overflow-y: auto;
+  margin-bottom: 15px;
+}
+
+.handHistoryContainer h3 {
+  cursor: pointer;
+  user-select: none;
+  margin: 0 0 10px 0;
+  font-size: 1.2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--color-gold);
+}
+
+/* Current play styles */
+.currentPlay {
+  margin-bottom: 15px;
+  padding: 10px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+}
+
+.currentPlayInfo {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.handType {
+  font-weight: bold;
+  color: var(--color-gold);
+}
+
+.currentPlayCards {
+  display: flex;
+  justify-content: center;
+}
+
+.currentCardContainer {
+  transition: transform 0.2s;
+}
+
+.currentCardContainer:hover {
+  transform: translateY(-10px);
+  z-index: 10;
+}
+
+/* History timeline */
+.historyTimeline {
+  max-height: 250px;
+  padding-right: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  padding-top: 10px;
+}
+
+.historyEntry {
+  display: flex;
+  padding: 8px;
+  margin-bottom: 8px;
+  border-radius: var(--border-radius-sm);
+  align-items: center;
+}
+
+.passEntry {
+  background-color: rgba(255, 0, 0, 0.2);
+}
+
+.playEntry {
+  background-color: rgba(0, 255, 0, 0.2);
+}
+
+.playerIndicator {
+  font-weight: bold;
+  margin-right: 10px;
+  padding: 3px 6px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: var(--border-radius-sm);
+  font-size: 0.8rem;
+  width: 80px;
+  text-align: center;
+}
+
+.passIndicator {
+  color: #ff6b6b;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.playDetails {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.playType {
+  margin-bottom: 5px;
+  font-size: 0.8rem;
+}
+
+.historyCards {
+  display: flex;
+}
+
+.miniCardContainer {
+  transform: scale(0.7);
+  transform-origin: center left;
+}
