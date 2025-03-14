@@ -147,41 +147,41 @@
 
 /* Card suit images */
 .Hearts {
-  background-image: url("icons/heart.svg");
+  background-image: url("../icons/heart.svg");
 }
 .Diamonds {
-  background-image: url("icons/diamond.svg");
+  background-image: url("../icons/diamond.svg");
 }
 .Spades {
-  background-image: url("icons/spade.svg");
+  background-image: url("../icons/spade.svg");
 }
 .Clubs {
-  background-image: url("icons/club.svg");
+  background-image: url("../icons/club.svg");
 }
 
 .Hearts.king,
 .Diamonds.king {
-  background-image: url("icons/king-red.svg") !important;
+  background-image: url("../icons/king-red.svg") !important;
 }
 .Spades.king,
 .Clubs.king {
-  background-image: url("icons/king-black.svg") !important;
+  background-image: url("../icons/king-black.svg") !important;
 }
 .Hearts.queen,
 .Diamonds.queen {
-  background-image: url("icons/queen-red.svg") !important;
+  background-image: url("../icons/queen-red.svg") !important;
 }
 .Spades.queen,
 .Clubs.queen {
-  background-image: url("icons/queen-black.svg") !important;
+  background-image: url("../icons/queen-black.svg") !important;
 }
 .Hearts.jack,
 .Diamonds.jack {
-  background-image: url("icons/jack-red.svg") !important;
+  background-image: url("../icons/jack-red.svg") !important;
 }
 .Spades.jack,
 .Clubs.jack {
-  background-image: url("icons/jack-black.svg") !important;
+  background-image: url("../icons/jack-black.svg") !important;
 }
 
 /* Card layouts for different ranks */
