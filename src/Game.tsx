@@ -123,7 +123,8 @@ const Game: React.FC = () => {
         <div className={classNames.gameOverOverlay}>
           <div className={classNames.gameOverModal}>
             <h2>
-              {winner === 0 ? "You Won! 🎉" : `Player ${winner + 1} Won!`}
+              {winner !== null &&
+                (winner === 0 ? "You Won! 🎉" : `Player ${winner + 1} Won!`)}
             </h2>
             <p>
               {winner === 0

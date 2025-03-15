@@ -48,7 +48,7 @@ const Player: React.FC<PlayerProps> = ({
   );
   const [selectedCards, setSelectedCards] = useState<CardType[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const { setCurrentHandType, handHistory, setHandHistory } = useGameContext();
+  const { handHistory, setHandHistory } = useGameContext();
 
   useEffect(() => {
     setHand(
