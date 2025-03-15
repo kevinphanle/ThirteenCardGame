@@ -6,6 +6,7 @@ import { useGameContext } from "./GameContext";
 import { getHandType } from "./HandTypeUtils";
 
 import sortHand from "./sortHand";
+import findBombs from "./findBombs";
 
 interface PlayerProps {
   initialHand: CardType[];
@@ -46,7 +47,7 @@ const Player: React.FC<PlayerProps> = ({
     initialHand.map((card) => ({ ...card, hidden: !isUserControlled }))
   );
   const [selectedCards, setSelectedCards] = useState<CardType[]>([]);
-  // const [handType, setHandType] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { setCurrentHandType, handHistory, setHandHistory } = useGameContext();
 
   useEffect(() => {
@@ -71,47 +72,7 @@ const Player: React.FC<PlayerProps> = ({
       : [...selectedCards, card];
 
     setSelectedCards(newSelectedCards);
-
-    // setHandType(getHandType(newSelectedCards));
   };
-
-  // const checkForPossiblePairs = (cards: CardType[]): boolean => {
-  //   const rankCounts: { [key: string]: number } = {};
-  //   cards.forEach((card) => {
-  //     rankCounts[card.rank] = (rankCounts[card.rank] || 0) + 1;
-  //   });
-
-  //   return Object.values(rankCounts).some((count) => count >= 2);
-  // };
-
-  // const checkForPossibleTriples = (cards: CardType[]): boolean => {
-  //   const rankCounts: { [key: string]: number } = {};
-  //   cards.forEach((card) => {
-  //     rankCounts[card.rank] = (rankCounts[card.rank] || 0) + 1;
-  //   });
-
-  //   return Object.values(rankCounts).some((count) => count >= 3);
-  // };
-
-  // const checkForPossibleStraights = (cards: CardType[]): boolean => {
-  //   const sortedRanks = cards
-  //     .map((card) => rankOrder.indexOf(card.rank))
-  //     .sort((a, b) => a - b);
-
-  //   let consecutiveCount = 1;
-
-  //   for (let i = 0; i < sortedRanks.length - 1; i++) {
-  //     if (sortedRanks[i] + 1 === sortedRanks[i + 1]) {
-  //       consecutiveCount++;
-  //       if (consecutiveCount >= 3) {
-  //         return true;
-  //       }
-  //     } else {
-  //       consecutiveCount = 1;
-  //     }
-  //   }
-  //   return false;
-  // };
 
   const isCardHigherWithType = (
     card: CardType,
@@ -160,6 +121,41 @@ const Player: React.FC<PlayerProps> = ({
       return true;
     }
 
+    // Special case: If selected hand is a bomb, it can beat any non-bomb hand
+    const isBombSelected = selectedHandType === "Bomb";
+    const isCurrentHandBomb = currentHand?.handType === "Bomb";
+
+    // If selected hand is a bomb and current hand is not a bomb, bomb wins
+    if (isBombSelected && !isCurrentHandBomb) {
+      return true;
+    }
+
+    // If both are bombs, compare them normally (larger bomb beats smaller bomb)
+    if (isBombSelected && isCurrentHandBomb) {
+      // For bombs, we compare by the highest rank or by the number of cards
+      // Four of a kind beats consecutive pairs if ranks are equal
+      if (cards.length === 4 && currentHand.cards.length > 4) {
+        return (
+          rankOrder.indexOf(cards[0].rank) >=
+          rankOrder.indexOf(currentHand.cards[0].rank)
+        );
+      } else if (cards.length > 4 && currentHand.cards.length === 4) {
+        return (
+          rankOrder.indexOf(cards[0].rank) >
+          rankOrder.indexOf(currentHand.cards[0].rank)
+        );
+      } else if (cards.length === currentHand.cards.length) {
+        // Compare bombs of the same type by their rank
+        return (
+          rankOrder.indexOf(cards[0].rank) >
+          rankOrder.indexOf(currentHand.cards[0].rank)
+        );
+      } else {
+        // If bomb types differ and neither is four of a kind, longer bomb wins
+        return cards.length > currentHand.cards.length;
+      }
+    }
+
     if (
       selectedHandType !== currentHand?.handType ||
       currentHand?.cards.length !== cards.length ||
@@ -177,35 +173,53 @@ const Player: React.FC<PlayerProps> = ({
   };
 
   const playHand = () => {
-    if (isCardPlayable(selectedCards)) {
-      const newHand = hand.filter(
-        (card) =>
-          !selectedCards.some(
-            (selectedCard) =>
-              selectedCard.rank === card.rank && selectedCard.suit === card.suit
-          )
-      );
-      setHand(newHand);
-      if (onPlayCards) {
-        const handType = getHandType(selectedCards);
-        setCurrentHandType(handType);
-        onPlayCards(selectedCards);
-        setHandHistory([
-          ...handHistory,
-          { cards: selectedCards, handType: handType },
-        ]);
-        setSelectedCards([]);
-      } else {
-        console.error("onPlayCards not provided");
-      }
+    // Check if this is the first play of the game (no current hand)
+    const isFirstPlay =
+      handHistory.length === 0 ||
+      handHistory.filter((h) => h.cards.length > 0).length === 0;
+
+    // Get the hand type of the selected cards
+    const selectedHandType = getHandType(selectedCards);
+
+    if (!selectedHandType) {
+      setErrorMessage("Not a valid hand type!");
+      setTimeout(() => setErrorMessage(null), 3000);
+      return;
+    }
+
+    // If it's not the first play, check if the hand is playable
+    if (!isFirstPlay && !isCardPlayable(selectedCards)) {
+      setErrorMessage("This hand cannot beat the current hand!");
+      setTimeout(() => setErrorMessage(null), 3000);
+      return;
+    }
+
+    // Hand is valid, proceed with playing it
+    const newHand = hand.filter(
+      (card) =>
+        !selectedCards.some(
+          (selectedCard) =>
+            selectedCard.rank === card.rank &&
+            selectedCard.suit === selectedCard.suit
+        )
+    );
+
+    setHand(newHand);
+
+    if (onPlayCards) {
+      onPlayCards(selectedCards);
+      setHandHistory([
+        ...handHistory,
+        { cards: selectedCards, handType: selectedHandType },
+      ]);
+      setSelectedCards([]);
     } else {
-      console.error("Selected cards are not playable");
+      console.error("onPlayCards not provided");
     }
   };
 
   const passTurn = () => {
     setSelectedCards([]);
-    // setHandType(null);
     onPass();
   };
 
@@ -222,10 +236,33 @@ const Player: React.FC<PlayerProps> = ({
 
     const currentHandType = currentHand?.handType;
 
+    if (
+      currentHand &&
+      currentHand.handType === "Single" &&
+      currentHand.cards[0].rank === "2"
+    ) {
+      // Look for bombs in the hand
+      const potentialBombs = findBombs(hand);
+
+      if (potentialBombs.length > 0) {
+        // Use the lowest bomb
+        setSelectedCards(potentialBombs[0]);
+        return;
+      }
+    }
+
     // If we're starting a new hand, pick the lowest single card or suitable combination
     if (startNewHand) {
       // Find the lowest single card (usually 3 of spades)
-      const lowestCard = hand.length > 0 ? [hand[0]] : [];
+      let randomIndex = Math.floor(Math.random() * hand.length);
+      if (handHistory.length) {
+        randomIndex = Math.floor(Math.random() * hand.length);
+      } else {
+        randomIndex = hand.findIndex(
+          (card) => card.rank === "3" && card.suit === "Spades"
+        );
+      }
+      const lowestCard = hand.length > 0 ? [hand[randomIndex]] : [];
 
       if (lowestCard.length > 0) {
         setSelectedCards(lowestCard);
@@ -344,6 +381,9 @@ const Player: React.FC<PlayerProps> = ({
     >
       {isUserControlled && (
         <div className={classNames.userHandArea}>
+          {errorMessage && (
+            <div className={classNames.errorMessage}>{errorMessage}</div>
+          )}
           <div className={classNames.hand}>
             {hand.map((card, index) => {
               // Calculate fan position and rotation

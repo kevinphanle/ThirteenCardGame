@@ -6,3 +6,5 @@
 @import "./css/cards.module.css";
 @import "./css/animations.module.css";
 @import "./css/history.module.css";
+@import "./css/overlay.module.css";
+@import "./css/error.module.css";

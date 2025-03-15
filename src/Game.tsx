@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { createDeck } from "./deck";
 import { Card as CardType } from "./types";
 import { useGameContext } from "./GameContext";
+import { getHandType } from "./HandTypeUtils";
 
 import PlayArea from "./PlayArea";
 import { dealCards } from "./deal";
@@ -20,6 +21,9 @@ const Game: React.FC = () => {
     setCurrentPlayer,
   } = useGameContext();
 
+  const [gameOver, setGameOver] = useState(false);
+  const [winner, setWinner] = useState<number | null>(null);
+
   const handleReset = () => {
     setDeck(createDeck());
     setPlayerHands([]);
@@ -27,6 +31,8 @@ const Game: React.FC = () => {
     setCurrentPlayer(0);
     setCurrentHandType(null);
     setHandHistory([]);
+    setGameOver(false);
+    setWinner(null);
   };
 
   const handleDeal = () => {
@@ -42,9 +48,45 @@ const Game: React.FC = () => {
     );
   };
 
-  const handlePlayCards = (cards: CardType[]) => {
-    setPlayedCards((prevPlayed) => [...prevPlayed, ...cards]);
-    advanceTurn();
+  const handlePlayCards = (playerIndex: number, cards: CardType[]) => {
+    if (gameOver) {
+      return; // Ignore if game is over
+    }
+    // Update player's hand
+    const updatedHands = [...playerHands];
+
+    updatedHands[playerIndex] = updatedHands[playerIndex].filter(
+      (card) => !cards.some((c) => c.rank === card.rank && c.suit === card.suit)
+    );
+
+    setPlayerHands(updatedHands);
+
+    // Add played cards to history
+    setHandHistory((prev) => [
+      ...prev,
+      {
+        playerIndex,
+        cards,
+        handType: getHandType(cards),
+      },
+    ]);
+
+    // Check for winner
+    checkForWinner();
+
+    // Only advance turn if game isn't over
+    if (!gameOver) {
+      advanceTurn();
+    }
+  };
+
+  const checkForWinner = () => {
+    const winnerIndex = playerHands.findIndex((hand) => hand.length === 0);
+
+    if (winnerIndex !== -1) {
+      setGameOver(true);
+      setWinner(winnerIndex);
+    }
   };
 
   const advanceTurn = () => {
@@ -75,6 +117,24 @@ const Game: React.FC = () => {
 
       {playerHands.length > 0 && (
         <PlayArea playerHands={playerHands} onPlayCards={handlePlayCards} />
+      )}
+
+      {gameOver && (
+        <div className={classNames.gameOverOverlay}>
+          <div className={classNames.gameOverModal}>
+            <h2>
+              {winner === 0 ? "You Won! 🎉" : `Player ${winner + 1} Won!`}
+            </h2>
+            <p>
+              {winner === 0
+                ? "Congratulations! You're the champion!"
+                : "Better luck next time!"}
+            </p>
+            <button onClick={handleReset} className={classNames.newGameBtn}>
+              Play Again
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );

@@ -8,7 +8,7 @@ import HandHistory from "./HandHistory";
 
 interface PlayAreaProps {
   playerHands: CardType[][];
-  onPlayCards: (cards: CardType[]) => void;
+  onPlayCards: (playerIndex: number, cards: CardType[]) => void;
 }
 
 const PlayArea: React.FC<PlayAreaProps> = ({ playerHands, onPlayCards }) => {
@@ -23,7 +23,7 @@ const PlayArea: React.FC<PlayAreaProps> = ({ playerHands, onPlayCards }) => {
   const handlePlayCards = (cards: CardType[]) => {
     const handType = getHandType(cards);
     setCurrentHandType(handType);
-    onPlayCards(cards);
+    onPlayCards(currentPlayer, cards);
   };
 
   const handlePass = () => {
