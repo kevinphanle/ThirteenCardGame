@@ -52,6 +52,7 @@ const Game: React.FC = () => {
     if (gameOver) {
       return; // Ignore if game is over
     }
+
     // Update player's hand
     const updatedHands = [...playerHands];
 
@@ -59,6 +60,26 @@ const Game: React.FC = () => {
       (card) => !cards.some((c) => c.rank === card.rank && c.suit === card.suit)
     );
 
+    // Check for winner using the updated hands (before setting state)
+    const winnerIndex = updatedHands.findIndex((hand) => hand.length === 0);
+
+    if (winnerIndex !== -1) {
+      // We have a winner
+      setPlayerHands(updatedHands);
+      setHandHistory((prev) => [
+        ...prev,
+        {
+          playerIndex,
+          cards,
+          handType: getHandType(cards),
+        },
+      ]);
+      setGameOver(true);
+      setWinner(winnerIndex);
+      return; // Don't advance turn if game is over
+    }
+
+    // No winner yet, update state and continue
     setPlayerHands(updatedHands);
 
     // Add played cards to history
@@ -71,22 +92,8 @@ const Game: React.FC = () => {
       },
     ]);
 
-    // Check for winner
-    checkForWinner();
-
-    // Only advance turn if game isn't over
-    if (!gameOver) {
-      advanceTurn();
-    }
-  };
-
-  const checkForWinner = () => {
-    const winnerIndex = playerHands.findIndex((hand) => hand.length === 0);
-
-    if (winnerIndex !== -1) {
-      setGameOver(true);
-      setWinner(winnerIndex);
-    }
+    // Advance to next player
+    advanceTurn();
   };
 
   const advanceTurn = () => {
