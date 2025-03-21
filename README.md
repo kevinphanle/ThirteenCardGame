@@ -2,6 +2,19 @@
 
 A modern implementation of the classic Thirteen card game (also known as Tiến Lên or Vietnamese Poker) built with React, TypeScript, and Vite.
 
+## 📸 Screenshots
+
+> To add screenshots of your game, take the following photos and save them in the `public/screenshots/` directory:
+
+![Game Start](public/screenshots/game-start.png)
+_Initial game board with the Deal button_
+
+![Gameplay](public/screenshots/gameplay.png)
+_Active gameplay showing played cards and player hands_
+
+![Winner](public/screenshots/winner.png)
+_Winner celebration screen_
+
 ## 🎮 Game Overview
 
 Thirteen is a climbing card game that originated in Vietnam. The game is played with a standard 52-card deck and typically involves 4 players. The objective is to be the first player to get rid of all your cards by playing valid card combinations.
